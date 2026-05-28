@@ -75,3 +75,31 @@ body{
     border-radius: 8px;
     cursor: pointer;
 }
+@media screen and (max-width: 768px){
+
+    .order-container{
+        width: 90%;
+        padding: 20px;
+    }
+
+    .barcode-section{
+        flex-direction: column;
+    }
+
+    .barcode-section button{
+        width: 100%;
+    }
+
+    .bill-options{
+        flex-direction: column;
+    }
+
+    .cart-item{
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .order-title{
+        font-size: 24px;
+    }
+}

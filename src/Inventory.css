@@ -70,3 +70,23 @@ body{
     background-color: #dc2626;
     transform: scale(1.05);
 }
+@media screen and (max-width: 768px){
+
+    .inventory-container{
+        width: 95%;
+        overflow-x: auto;
+    }
+
+    .inventory-title{
+        font-size: 24px;
+    }
+
+    .inventory-table{
+        min-width: 800px;
+    }
+
+    .delete-btn{
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+}
