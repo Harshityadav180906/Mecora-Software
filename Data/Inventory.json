@@ -1,0 +1,167 @@
+{
+  "items": [
+    {
+      "id": "1",
+      "barcode": "PROD-1001",
+      "name": "Wireless Mechanical Keyboard",
+      "category": "Electronics",
+      "price": 3499,
+      "currency": "INR",
+      "stock_quantity": 42,
+      "supplier": "TechGear Solutions",
+      "is_available": true
+    },
+    {
+      "id": "2",
+      "barcode": "PROD-1002",
+      "name": "Gaming Mouse",
+      "category": "Electronics",
+      "price": 1499,
+      "currency": "INR",
+      "stock_quantity": 29,
+      "supplier": "HyperTech",
+      "is_available": true
+    },
+    {
+      "id": "3",
+      "barcode": "PROD-1003",
+      "name": "LED Desk Lamp",
+      "category": "Home Decor",
+      "price": 1299,
+      "currency": "INR",
+      "stock_quantity": 19,
+      "supplier": "BrightLite",
+      "is_available": true
+    },
+    {
+      "id": "OjFwe3virlc",
+      "barcode": "901138500719",
+      "name": "Himalaya Liv.52 DS",
+      "category": "Medicine",
+      "price": 275,
+      "currency": "INR",
+      "stock_quantity": 10,
+      "supplier": "NA",
+      "is_available": true
+    }
+  ],
+  "orders": [
+    {
+      "id": "7rcfxN-jUqQ",
+      "products": [
+        {
+          "id": "1",
+          "barcode": "PROD-1001",
+          "name": "Wireless Mechanical Keyboard",
+          "category": "Electronics",
+          "price": 3499,
+          "currency": "INR",
+          "stock_quantity": 45,
+          "supplier": "TechGear Solutions",
+          "is_available": true
+        },
+        {
+          "id": "2",
+          "barcode": "PROD-1002",
+          "name": "Gaming Mouse",
+          "category": "Electronics",
+          "price": 1499,
+          "currency": "INR",
+          "stock_quantity": 30,
+          "supplier": "HyperTech",
+          "is_available": true
+        },
+        {
+          "id": "sJcdWQ4gxXQ",
+          "barcode": "901138500719",
+          "name": "Himalaya Liv.52 DS",
+          "category": "Medicine",
+          "price": 275,
+          "currency": "INR",
+          "stock_quantity": 12,
+          "supplier": "Na",
+          "is_available": true
+        }
+      ],
+      "totalAmount": 5273,
+      "orderDate": "28/05/2026, 16:52:43"
+    },
+    {
+      "id": "3DI7WqwPMqU",
+      "products": [
+        {
+          "id": "OjFwe3virlc",
+          "barcode": "901138500719",
+          "name": "Himalaya Liv.52 DS",
+          "category": "Medicine",
+          "price": 275,
+          "currency": "INR",
+          "stock_quantity": 12,
+          "supplier": "NA",
+          "is_available": true
+        }
+      ],
+      "totalAmount": 275,
+      "orderDate": "28/05/2026, 16:56:09"
+    },
+    {
+      "id": "aHYCGCAgNX4",
+      "products": [
+        {
+          "id": "OjFwe3virlc",
+          "barcode": "901138500719",
+          "name": "Himalaya Liv.52 DS",
+          "category": "Medicine",
+          "price": 275,
+          "currency": "INR",
+          "stock_quantity": 11,
+          "supplier": "NA",
+          "is_available": true
+        },
+        {
+          "id": "1",
+          "barcode": "PROD-1001",
+          "name": "Wireless Mechanical Keyboard",
+          "category": "Electronics",
+          "price": 3499,
+          "currency": "INR",
+          "stock_quantity": 44,
+          "supplier": "TechGear Solutions",
+          "is_available": true
+        }
+      ],
+      "totalAmount": 3774,
+      "orderDate": "28/05/2026, 17:00:24"
+    },
+    {
+      "id": "UskbXtf-cpk",
+      "products": [
+        {
+          "id": "1",
+          "barcode": "PROD-1001",
+          "name": "Wireless Mechanical Keyboard",
+          "category": "Electronics",
+          "price": 3499,
+          "currency": "INR",
+          "stock_quantity": 43,
+          "supplier": "TechGear Solutions",
+          "is_available": true
+        },
+        {
+          "id": "3",
+          "barcode": "PROD-1003",
+          "name": "LED Desk Lamp",
+          "category": "Home Decor",
+          "price": 1299,
+          "currency": "INR",
+          "stock_quantity": 20,
+          "supplier": "BrightLite",
+          "is_available": true
+        }
+      ],
+      "totalAmount": 4798,
+      "orderDate": "28/05/2026, 17:01:57"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
