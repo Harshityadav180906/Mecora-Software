@@ -1,0 +1,413 @@
+/* ==========================
+   PAGE
+========================== */
+
+.orders-container {
+  padding: 30px 20px;
+  background: #090d16;
+  min-height: 100vh;
+  color: #fff;
+}
+
+.orders-title {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+/* ==========================
+   TOP BAR
+========================== */
+
+.orders-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 15px;
+}
+
+.sort-select {
+  background: #1e293b;
+  color: white;
+  border: 1px solid #334155;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  width: 160px;
+  outline: none;
+}
+
+.sort-select:hover {
+  border-color: #38bdf8;
+}
+
+/* ==========================
+   SUMMARY CARDS
+========================== */
+
+.payment-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.summary-card {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 20px;
+  transition: 0.3s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-2px);
+}
+
+.summary-card h3 {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.summary-card p {
+  margin-top: 10px;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.cash-card {
+  border-left: 4px solid #10b981;
+}
+
+.cash-card p {
+  color: #10b981;
+}
+
+.upi-card {
+  border-left: 4px solid #a855f7;
+}
+
+.upi-card p {
+  color: #a855f7;
+}
+
+.card-summary-card {
+  border-left: 4px solid #38bdf8;
+}
+
+.card-summary-card p {
+  color: #38bdf8;
+}
+
+.orders-card {
+  border-left: 4px solid #f59e0b;
+}
+
+.orders-card p {
+  color: #f59e0b;
+}
+
+/* ==========================
+   TABLE
+========================== */
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  background: #1e293b;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 14px;
+}
+
+.orders-table th {
+  background: #0f172a;
+  color: #94a3b8;
+  padding: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+}
+
+.orders-table td {
+  padding: 16px;
+  border-bottom: 1px solid #334155;
+  color: #e2e8f0;
+  vertical-align: middle;
+}
+
+.orders-table tr:last-child td {
+  border-bottom: none;
+}
+
+.orders-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* ==========================
+   ORDER ID
+========================== */
+
+.order-id {
+  font-family: monospace;
+  color: #38bdf8;
+  font-weight: bold;
+}
+
+/* ==========================
+   PRODUCTS
+========================== */
+
+.products-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.product-item-row {
+  font-size: 13px;
+}
+
+.qty-badge {
+  color: #94a3b8;
+  font-size: 11px;
+  margin-left: 4px;
+  background: #0f172a;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* ==========================
+   AMOUNT
+========================== */
+
+.amount-cell {
+  font-weight: bold;
+  color: #10b981;
+}
+
+/* ==========================
+   PAYMENT BADGES
+========================== */
+
+.payment-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 55px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.payment-cash {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.payment-upi {
+  background: rgba(168, 85, 247, 0.2);
+  color: #a855f7;
+}
+
+.payment-card {
+  background: rgba(56, 189, 248, 0.2);
+  color: #38bdf8;
+}
+
+/* ==========================
+   USER
+========================== */
+
+.creator-cell {
+  color: #cbd5e1;
+  font-style: italic;
+}
+
+/* ==========================
+   EMPTY / LOADING
+========================== */
+
+.no-data,
+.loader {
+  text-align: center;
+  padding: 40px;
+  color: #94a3b8;
+  font-size: 16px;
+}
+
+/* ==========================
+   MOBILE
+========================== */
+
+@media (max-width: 768px) {
+  .payment-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .sort-select {
+    width: 100%;
+  }
+
+  .orders-title {
+    font-size: 1.5rem;
+  }
+}
+.orders-toolbar-grid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+.search-orders-input {
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  background-color: #1e293b;
+  color: #fff;
+  border-radius: 6px;
+  font-size: 14px;
+}
+.sub-db-id {
+  display: block;
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 2px;
+}
+.patient-summary-cell {
+  display: flex;
+  flex-direction: column;
+}
+.sub-phone {
+  font-size: 12px;
+  color: #64748b;
+}
+.action-buttons-workflow-flex-row {
+  display: flex;
+  gap: 6px;
+}
+.ctrl-workflow-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.ctrl-workflow-btn:hover {
+  opacity: 0.9;
+}
+.ctrl-workflow-btn.edit-action {
+  background-color: #eab308;
+  color: #000;
+}
+.ctrl-workflow-btn.print-action {
+  background-color: #3b82f6;
+  color: #fff;
+}
+.ctrl-workflow-btn.download-action {
+  background-color: #10b981;
+  color: #fff;
+}
+
+/* Inline Modifier CSS */
+.editing-row-active-highlight {
+  background-color: #0f172a !important;
+  color: #fff;
+}
+.inline-modifier-form-card {
+  padding: 20px;
+  background: #1e293b;
+  border-radius: 8px;
+  border: 1px solid #334155;
+  text-align: left;
+}
+.form-fields-horizontal-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin: 15px 0;
+}
+.form-cell {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 150px;
+}
+.form-cell label {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-bottom: 5px;
+}
+.form-cell input,
+.form-cell select {
+  padding: 8px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: #fff;
+  border-radius: 4px;
+}
+.editing-products-items-list-block {
+  margin: 15px 0;
+  padding: 12px;
+  background: #0f172a;
+  border-radius: 6px;
+}
+.inline-product-edit-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid #1e293b;
+}
+.qty-control-wrapper input {
+  width: 70px;
+  padding: 4px;
+  margin-left: 8px;
+  background: #1e293b;
+  border: 1px solid #334155;
+  color: #fff;
+  border-radius: 4px;
+  text-align: center;
+}
+.edit-form-accounting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+}
+.action-buttons-group-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+.save-edit-btn-action {
+  padding: 8px 20px;
+  background: #10b981;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.cancel-edit-btn-action {
+  padding: 8px 20px;
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+}

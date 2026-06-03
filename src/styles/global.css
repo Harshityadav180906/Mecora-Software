@@ -1,0 +1,265 @@
+/* Global.css */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #0f172a;
+  color: #f8fafc;
+  font-family: "Inter", sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* SCROLLBAR */
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    #38bdf8,
+    #2563eb
+  );
+  border-radius: 20px;
+}
+
+/* LINKS */
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* BUTTONS */
+
+button {
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: 0.3s ease;
+  font-family: inherit;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+/* INPUTS */
+
+input,
+select,
+textarea {
+  outline: none;
+  border: none;
+  font-family: inherit;
+}
+
+/* IMAGES */
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* CONTAINERS */
+
+.page-container {
+  padding: 30px;
+  width: 100%;
+}
+
+/* TITLES */
+
+.dashboard-title,
+.inventory-title,
+.order-title,
+.add-product-title,
+.admin-title {
+  font-size: 38px;
+  font-weight: 800;
+  margin-bottom: 30px;
+  color: white;
+}
+
+/* CARDS */
+
+.card {
+  background: linear-gradient(
+    135deg,
+    #1e293b,
+    #334155
+  );
+
+  border-radius: 22px;
+
+  padding: 25px;
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.25);
+
+  transition: 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+}
+
+/* FLEX */
+
+.flex {
+  display: flex;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* GRID */
+
+.grid {
+  display: grid;
+}
+
+/* TEXT COLORS */
+
+.text-primary {
+  color: #38bdf8;
+}
+
+.text-success {
+  color: #22c55e;
+}
+
+.text-danger {
+  color: #ef4444;
+}
+
+.text-warning {
+  color: #f59e0b;
+}
+
+/* BACKGROUND COLORS */
+
+.bg-primary {
+  background: #38bdf8;
+}
+
+.bg-dark {
+  background: #1e293b;
+}
+
+/* TABLES */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* TRANSITIONS */
+
+.transition {
+  transition: 0.3s ease;
+}
+
+/* GLASS EFFECT */
+
+.glass {
+  background: rgba(30, 41, 59, 0.7);
+
+  backdrop-filter: blur(10px);
+
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* SHADOWS */
+
+.shadow {
+  box-shadow:
+    0 8px 20px rgba(0,0,0,0.25);
+}
+
+/* BORDER RADIUS */
+
+.rounded {
+  border-radius: 20px;
+}
+
+/* SPACING */
+
+.mt-1 {
+  margin-top: 10px;
+}
+
+.mt-2 {
+  margin-top: 20px;
+}
+
+.mt-3 {
+  margin-top: 30px;
+}
+
+.mb-1 {
+  margin-bottom: 10px;
+}
+
+.mb-2 {
+  margin-bottom: 20px;
+}
+
+.mb-3 {
+  margin-bottom: 30px;
+}
+
+/* ANIMATIONS */
+
+.fade-in {
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+
+  .page-container {
+    padding: 18px;
+  }
+
+  .dashboard-title,
+  .inventory-title,
+  .order-title,
+  .add-product-title,
+  .admin-title {
+    font-size: 28px;
+  }
+}
