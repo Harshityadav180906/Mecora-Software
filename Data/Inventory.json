@@ -27,14 +27,14 @@
       "category": "Medicine",
       "price": 30,
       "currency": "INR",
-      "stock_quantity": 11,
+      "stock_quantity": 8,
       "supplier": "Medical Supplier Pvt Ltd",
       "expiry_date": "2028-02-15",
       "sold_count": 4,
       "last_sold": "2026-06-03T07:08:27.236Z",
       "reorder_level": 10,
       "is_available": true,
-      "quantity": 7,
+      "quantity": 8,
       "stock": 50
     },
     {
@@ -1506,6 +1506,22 @@
       "last_sold": "",
       "reorder_level": 10,
       "is_available": true
+    },
+    {
+      "barcode": "8907661007893",
+      "name": "Bilypsa",
+      "category": "Medicine",
+      "price": 2255,
+      "currency": "INR",
+      "stock_quantity": 20,
+      "supplier": "Na",
+      "expiry_date": "2028-05-14",
+      "reorder_level": 5,
+      "is_available": true,
+      "id": "R2gbPqyAbpo",
+      "sold_count": 0,
+      "last_sold": "",
+      "quantity": 20
     }
   ],
   "orders": [
@@ -1942,6 +1958,81 @@
         }
       ],
       "changeReturned": "0.00"
+    },
+    {
+      "id": "H7sPTnXaDC8",
+      "cashMemoNo": 6577,
+      "patientName": "jagrati",
+      "patientPhone": "",
+      "patientAddress": "",
+      "doctorName": "N/A",
+      "paymentMethod": "Cash",
+      "totalAmount": 60,
+      "cashReceived": "100",
+      "createdBy": "Harshit",
+      "orderDate": "2026-06-03T13:50:39.370Z",
+      "products": [
+        {
+          "name": "Paracetamol 650mg (Dolo)",
+          "quantity": 2,
+          "pack": "10TAB",
+          "batch": "B703319",
+          "exp": "2028-02-15",
+          "gst": 0,
+          "rate": 30
+        }
+      ],
+      "changeReturned": "40.00"
+    },
+    {
+      "cashMemoNo": 2904,
+      "patientName": "Jagrati",
+      "patientPhone": "9667812705",
+      "patientAddress": "",
+      "doctorName": "Ankur Jain",
+      "products": [
+        {
+          "name": "Bilypsa",
+          "quantity": 1,
+          "pack": "10TAB",
+          "batch": "B990052",
+          "exp": "2028-05-14",
+          "gst": 0,
+          "rate": 2255
+        }
+      ],
+      "totalAmount": 1804,
+      "orderDate": "2026-06-14T09:23:40.620Z",
+      "paymentMethod": "Cash",
+      "createdBy": "Harshit",
+      "cashReceived": "2000",
+      "changeReturned": "196.00",
+      "id": "fB01iaavFPo"
+    },
+    {
+      "cashMemoNo": 9185,
+      "patientName": "Jagrati",
+      "patientPhone": "",
+      "patientAddress": "",
+      "doctorName": "N/A",
+      "products": [
+        {
+          "name": "Paracetamol 650mg (Dolo)",
+          "quantity": 1,
+          "pack": "10TAB",
+          "batch": "B998928",
+          "exp": "2028-02-15",
+          "gst": 0,
+          "rate": 30
+        }
+      ],
+      "totalAmount": 30,
+      "orderDate": "2026-06-14T10:40:16.238Z",
+      "paymentMethod": "Cash",
+      "createdBy": "Harshit",
+      "cashReceived": "50",
+      "changeReturned": "20.00",
+      "id": "uwOy1w8q3iA"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

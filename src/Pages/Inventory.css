@@ -6,14 +6,14 @@
   max-width: 1600px;
   margin: auto;
   padding: 30px;
-  color: #ffffff;
+  color: #1e293b;
 }
 
 .inventory-title {
   font-size: 3rem;
   font-weight: 700;
   margin-bottom: 30px;
-  color: #ffffff;
+  color: #0f172a;
 }
 
 /* =========================
@@ -28,13 +28,9 @@
 }
 
 .stat-card {
-  background: linear-gradient(
-    135deg,
-    #162544,
-    #1f3564
-  );
+  background: #ffffff;
 
-  border-radius: 18px;
+  border-radius: 20px;
 
   padding: 25px;
 
@@ -44,20 +40,24 @@
   flex-direction: column;
   justify-content: center;
 
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid #e2e8f0;
 
-  box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+  box-shadow:
+    0 8px 25px rgba(15, 23, 42, 0.08);
 
-  transition: all 0.3s ease;
+  transition: 0.3s ease;
 }
 
 .stat-card:hover {
   transform: translateY(-5px);
+
+  box-shadow:
+    0 15px 35px rgba(15, 23, 42, 0.12);
 }
 
 .stat-card h3 {
   font-size: 15px;
-  color: #79b6ff;
+  color: #64748b;
   margin-bottom: 12px;
   font-weight: 600;
 }
@@ -65,7 +65,6 @@
 .stat-card p {
   font-size: 38px;
   font-weight: 700;
-  color: white;
 }
 
 /* KPI COLORS */
@@ -74,20 +73,40 @@
   border-left: 5px solid #3b82f6;
 }
 
+.products-card p {
+  color: #3b82f6;
+}
+
 .stock-card {
   border-left: 5px solid #10b981;
+}
+
+.stock-card p {
+  color: #10b981;
 }
 
 .low-stock-card {
   border-left: 5px solid #f59e0b;
 }
 
+.low-stock-card p {
+  color: #f59e0b;
+}
+
 .value-card {
   border-left: 5px solid #8b5cf6;
 }
 
+.value-card p {
+  color: #8b5cf6;
+}
+
 .expiry-card {
   border-left: 5px solid #ef4444;
+}
+
+.expiry-card p {
+  color: #ef4444;
 }
 
 /* =========================
@@ -96,6 +115,7 @@
 
 .inventory-controls {
   display: grid;
+
   grid-template-columns:
     2fr
     1fr
@@ -111,27 +131,39 @@
 .search-input,
 .filter-select {
   height: 52px;
-  border: none;
-  outline: none;
 
-  border-radius: 12px;
+  border: 1px solid #dbe2ea;
 
-  background: #1c3058;
+  border-radius: 14px;
 
-  color: white;
+  background: white;
+
+  color: #1e293b;
 
   padding: 0 18px;
 
   font-size: 15px;
+
+  transition: .3s;
 }
 
 .search-input::placeholder {
-  color: #9aa8c5;
+  color: #94a3b8;
+}
+
+.search-input:focus,
+.filter-select:focus {
+  outline: none;
+
+  border-color: #3b82f6;
+
+  box-shadow:
+    0 0 0 4px rgba(59,130,246,.15);
 }
 
 .filter-select option {
-  background: #162544;
-  color: white;
+  background: white;
+  color: #1e293b;
 }
 
 /* =========================
@@ -140,8 +172,10 @@
 
 .refresh-btn,
 .export-btn {
+
   border: none;
-  border-radius: 12px;
+
+  border-radius: 14px;
 
   padding: 0 20px;
 
@@ -151,7 +185,7 @@
 
   cursor: pointer;
 
-  transition: 0.3s;
+  transition: .3s;
 }
 
 .refresh-btn {
@@ -173,7 +207,9 @@
 }
 
 .delete-btn {
+
   background: #ef4444;
+
   color: white;
 
   border: none;
@@ -186,7 +222,7 @@
 
   font-weight: 600;
 
-  transition: 0.3s;
+  transition: .3s;
 }
 
 .delete-btn:hover {
@@ -198,11 +234,17 @@
 ========================= */
 
 .table-wrapper {
-  background: #162544;
-  border-radius: 18px;
+
+  background: white;
+
+  border-radius: 20px;
+
   overflow-x: auto;
 
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid #e2e8f0;
+
+  box-shadow:
+    0 8px 24px rgba(15,23,42,.06);
 }
 
 .inventory-table {
@@ -211,39 +253,41 @@
 }
 
 .inventory-table thead {
-  background: #0f1d39;
+  background: #f8fafc;
 }
 
 .inventory-table th {
-  padding: 20px;
+
+  padding: 18px;
 
   text-align: left;
 
-  color: #39b5ff;
+  color: #64748b;
 
-  font-size: 16px;
+  font-size: 15px;
 
-  font-weight: 600;
+  font-weight: 700;
 
   white-space: nowrap;
 }
 
 .inventory-table td {
-  padding: 18px 20px;
 
-  border-top: 1px solid rgba(255,255,255,0.06);
+  padding: 18px;
+
+  border-top: 1px solid #e2e8f0;
 
   white-space: nowrap;
 
-  color: white;
+  color: #334155;
 }
 
 .inventory-table tbody tr {
-  transition: 0.25s;
+  transition: .25s;
 }
 
 .inventory-table tbody tr:hover {
-  background: rgba(59,130,246,0.08);
+  background: #f8fafc;
 }
 
 /* =========================
@@ -251,9 +295,10 @@
 ========================= */
 
 .available {
+
   display: inline-block;
 
-  background: rgba(16,185,129,0.2);
+  background: rgba(16,185,129,.15);
 
   color: #10b981;
 
@@ -267,9 +312,10 @@
 }
 
 .not-available {
+
   display: inline-block;
 
-  background: rgba(239,68,68,0.2);
+  background: rgba(239,68,68,.15);
 
   color: #ef4444;
 
@@ -304,7 +350,7 @@
 .no-data {
   text-align: center;
   padding: 40px;
-  color: #a0aec0;
+  color: #94a3b8;
   font-size: 18px;
 }
 
@@ -317,7 +363,7 @@
 }
 
 .table-wrapper::-webkit-scrollbar-track {
-  background: #162544;
+  background: #f1f5f9;
 }
 
 .table-wrapper::-webkit-scrollbar-thumb {
@@ -330,12 +376,15 @@
 ========================= */
 
 @media (max-width: 1200px) {
+
   .inventory-controls {
     grid-template-columns: 1fr 1fr;
   }
+
 }
 
 @media (max-width: 768px) {
+
   .inventory-container {
     padding: 15px;
   }
@@ -361,4 +410,5 @@
   .stat-card p {
     font-size: 28px;
   }
+
 }

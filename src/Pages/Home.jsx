@@ -96,7 +96,6 @@ function Home() {
   // --- ADVANCED TIMEFRAME AGGREGATION SYSTEM ---
   const getChartData = () => {
     if (!orders || orders.length === 0) {
-      // Clean fallback parameters if database fields haven't finished mounting yet
       return [
         { label: "Data 1", val: 200 },
         { label: "Data 2", val: 500 },
@@ -110,7 +109,6 @@ function Home() {
       const amt = parseFloat(String(order.totalAmount || 0).replace(/[^0-9.]/g, "")) || 0;
       let dateObj = new Date(order.orderDate);
       
-      // Fallback fallback verification step for raw locale string representations
       if (isNaN(dateObj.getTime()) && order.orderDate) {
         const [dPart] = order.orderDate.split(', ');
         if (dPart && dPart.includes('/')) {
@@ -122,38 +120,32 @@ function Home() {
       if (isNaN(dateObj.getTime())) return;
 
       if (timeframe === "days") {
-        // Option 1: Chronological Order Hours / Days Time Slots
         const hours = String(dateObj.getHours()).padStart(2, '0');
         const minutes = String(dateObj.getMinutes()).padStart(2, '0');
         const labelKey = `${hours}:${minutes}`;
         aggregated[labelKey] = (aggregated[labelKey] || 0) + amt;
 
       } else if (timeframe === "weeks") {
-        // Option 2: Group by Calendar Days of Current Week
         const weekdayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
         const labelKey = weekdayNames[dateObj.getDay()];
         aggregated[labelKey] = (aggregated[labelKey] || 0) + amt;
 
       } else if (timeframe === "months") {
-        // Option 3: Calendar Months 
         const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         const labelKey = monthNames[dateObj.getMonth()];
         aggregated[labelKey] = (aggregated[labelKey] || 0) + amt;
 
       } else if (timeframe === "years") {
-        // Option 4: Complete Calendar Fiscal Years
         const labelKey = String(dateObj.getFullYear());
         aggregated[labelKey] = (aggregated[labelKey] || 0) + amt;
       }
     });
 
-    // Translate aggregated dynamic dictionary mapping into standard iterable data formats array
     let outputArray = Object.keys(aggregated).map((key) => ({
       label: key,
       val: aggregated[key],
     }));
 
-    // If viewing days data, show max of last 7 entries to avoid scaling congestion bugs
     if (timeframe === "days") {
       outputArray = outputArray.slice(-7);
     } else if (timeframe === "weeks") {
@@ -174,7 +166,6 @@ function Home() {
 
   const maxChartVal = Math.max(...chartData.map(d => d.val), 500);
 
-  // Dynamic SVG Vector Math Coordinates generators
   const points = chartData.map((d, index) => {
     const totalSteps = chartData.length > 1 ? chartData.length - 1 : 1;
     const x = (index / totalSteps) * (graphWidth - 100) + 50; 
@@ -187,10 +178,10 @@ function Home() {
   const fillPoints = `${startX},${graphHeight + verticalPaddingOffset} ${points} ${endX},${graphHeight + verticalPaddingOffset}`;
 
   return (
-    <div className="page-container">
-      <h1 className="admin-title">Mecora Dashboard</h1>
-      <p style={{ color: "#94a3b8", marginTop: "-10px", marginBottom: "25px", fontSize: "14px" }}>
-        Logged in as: <strong style={{ color: "#38bdf8" }}>{user.username} ({user.role})</strong>
+    <div className="page-container" style={{ background: "#f8fafc", minHeight: "100vh", padding: "30px", color: "#1e293b" }}>
+      <h1 className="admin-title" style={{ color: "#0f172a", fontSize: "28px", fontWeight: "bold" }}>Mecora Dashboard</h1>
+      <p style={{ color: "#64748b", marginTop: "-10px", marginBottom: "25px", fontSize: "14px" }}>
+        Logged in as: <strong style={{ color: "#0284c7" }}>{user.username} ({user.role})</strong>
       </p>
 
       {/* DASHBOARD CARDS GRID */}
@@ -218,15 +209,15 @@ function Home() {
             </div>
           </>
         ) : (
-          <div className="card" style={{ borderColor: "#8b5cf6", borderWidth: "1px", borderStyle: "solid" }}>
-            <h2 style={{ color: "#a78bfa" }}>My Sales Today</h2>
-            <p>₹{employeeSalesClean}</p>
+          <div className="card" style={{ borderColor: "#7c3aed", borderWidth: "1px", borderStyle: "solid", background: "#f5f3ff" }}>
+            <h2 style={{ color: "#6d28d9" }}>My Sales Today</h2>
+            <p style={{ color: "#6d28d9" }}>₹{employeeSalesClean}</p>
           </div>
         )}
 
         <div className="card">
           <h2>Low Stock Products</h2>
-          <p style={{ color: lowStockCount > 0 ? "#ff9800" : "inherit" }}>{lowStockCount}</p>
+          <p style={{ color: lowStockCount > 0 ? "#ea580c" : "inherit" }}>{lowStockCount}</p>
         </div>
 
         <div className="card">
@@ -241,17 +232,17 @@ function Home() {
           
           {/* HEADER ROW FEATURING DYNAMIC FILTER BUTTON TOGGLES */}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
-            <h2 style={{ color: "#fff", fontSize: "18px", margin: 0 }}>Store Performance Analytics</h2>
+            <h2 style={{ color: "#0f172a", fontSize: "18px", margin: 0, fontWeight: "600" }}>Store Performance Analytics</h2>
             
             {/* TIMEFRAME CONTROLLERS BUTTON SEGMENTATION MATRIX */}
-            <div style={{ display: "flex", gap: "8px", background: "#111827", padding: "4px", borderRadius: "8px", border: "1px solid #1e293b" }}>
+            <div style={{ display: "flex", gap: "8px", background: "#e2e8f0", padding: "4px", borderRadius: "8px", border: "1px solid #cbd5e1" }}>
               {["days", "weeks", "months", "years"].map((t) => (
                 <button
                   key={t}
                   onClick={() => setTimeframe(t)}
                   style={{
-                    background: timeframe === t ? "#38bdf8" : "transparent",
-                    color: timeframe === t ? "#0f172a" : "#94a3b8",
+                    background: timeframe === t ? "#0284c7" : "transparent",
+                    color: timeframe === t ? "#ffffff" : "#64748b",
                     border: "none",
                     padding: "6px 14px",
                     borderRadius: "6px",
@@ -268,28 +259,28 @@ function Home() {
             </div>
           </div>
 
-          <div style={{ background: "#111827", border: "1px solid #1e293b", padding: "25px", borderRadius: "14px" }}>
+          <div style={{ background: "#ffffff", border: "1px solid #e2e8f0", padding: "25px", borderRadius: "14px", boxShadow: "0 1px 3px 0 rgba(0,0,0,0.1)" }}>
             
             {/* Native SVG Visualization Window */}
-            <div style={{ width: "100%", background: "#0f172a", padding: "25px 10px 10px 10px", borderRadius: "8px", overflow: "hidden" }}>
+            <div style={{ width: "100%", background: "#f8fafc", padding: "25px 10px 10px 10px", borderRadius: "8px", overflow: "hidden", border: "1px solid #f1f5f9" }}>
               <svg viewBox={`0 0 ${graphWidth} 250`} style={{ width: "100%", height: "auto", display: "block" }}>
                 <defs>
                   <linearGradient id="homeChartGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.35"/>
-                    <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.0"/>
+                    <stop offset="0%" stopColor="#0284c7" stopOpacity="0.2"/>
+                    <stop offset="100%" stopColor="#0284c7" stopOpacity="0.0"/>
                   </linearGradient>
                 </defs>
 
                 {/* Grid guidelines */}
-                <line x1="40" y1={verticalPaddingOffset} x2={graphWidth - 40} y2={verticalPaddingOffset} stroke="#1e293b" strokeDasharray="3" />
-                <line x1="40" y1={graphHeight / 2 + verticalPaddingOffset} x2={graphWidth - 40} y2={graphHeight / 2 + verticalPaddingOffset} stroke="#1e293b" strokeDasharray="3" />
-                <line x1="40" y1={graphHeight + verticalPaddingOffset} x2={graphWidth - 40} y2={graphHeight + verticalPaddingOffset} stroke="#334155" strokeWidth="1.5" />
+                <line x1="40" y1={verticalPaddingOffset} x2={graphWidth - 40} y2={verticalPaddingOffset} stroke="#e2e8f0" strokeDasharray="3" />
+                <line x1="40" y1={graphHeight / 2 + verticalPaddingOffset} x2={graphWidth - 40} y2={graphHeight / 2 + verticalPaddingOffset} stroke="#e2e8f0" strokeDasharray="3" />
+                <line x1="40" y1={graphHeight + verticalPaddingOffset} x2={graphWidth - 40} y2={graphHeight + verticalPaddingOffset} stroke="#cbd5e1" strokeWidth="1.5" />
 
                 {/* Render geometric content paths only if we have sufficient tracking vector points */}
                 {chartData.length > 1 && (
                   <>
                     <polygon points={fillPoints} fill="url(#homeChartGrad)" />
-                    <polyline fill="none" stroke="#38bdf8" strokeWidth="3.5" points={points} strokeLinecap="round" strokeLinejoin="round" />
+                    <polyline fill="none" stroke="#0284c7" strokeWidth="3.5" points={points} strokeLinecap="round" strokeLinejoin="round" />
                   </>
                 )}
 
@@ -300,10 +291,10 @@ function Home() {
                   const y = (graphHeight - (d.val / maxChartVal) * (graphHeight - 40)) + verticalPaddingOffset;
                   return (
                     <g key={index}>
-                      <circle cx={x} cy={y} r="5" fill="#0f172a" stroke="#38bdf8" strokeWidth="3" />
+                      <circle cx={x} cy={y} r="5" fill="#ffffff" stroke="#0284c7" strokeWidth="3" />
                       
                       {/* Currency metrics value tooltip string flags */}
-                      <text x={x} y={y - 15} fill="#ffffff" fontSize="12px" fontWeight="bold" textAnchor="middle">
+                      <text x={x} y={y - 15} fill="#0f172a" fontSize="12px" fontWeight="bold" textAnchor="middle">
                         ₹{d.val.toFixed(0)}
                       </text>
                       
@@ -311,7 +302,7 @@ function Home() {
                       <text 
                         x={x} 
                         y={graphHeight + verticalPaddingOffset + 25} 
-                        fill="#94a3b8" 
+                        fill="#64748b" 
                         fontSize="12px" 
                         textAnchor="middle" 
                         fontWeight="bold"

@@ -1,27 +1,146 @@
-nav {
+/* =========================
+   NAVBAR
+========================= */
+
+.navbar {
   width: 100%;
-  padding: 18px 40px;
-  background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(10px);
+  padding: 16px 35px;
+
   display: flex;
-  gap: 25px;
+  justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #1e293b;
+
+  background: rgba(255,255,255,0.95);
+
+  backdrop-filter: blur(12px);
+
+  border-bottom: 1px solid #e2e8f0;
+
   position: sticky;
   top: 0;
   z-index: 1000;
+
+  box-shadow:
+    0 4px 18px rgba(15,23,42,.05);
 }
 
-nav a {
+
+/* =========================
+   LOGO
+========================= */
+
+.nav-logo a {
+  color: #2563eb;
+  font-size: 22px;
+  font-weight: 800;
   text-decoration: none;
-  color: #cbd5e1;
-  font-weight: 600;
-  transition: 0.3s;
-  padding: 10px 16px;
-  border-radius: 10px;
 }
 
-nav a:hover {
-  background: #1e293b;
-  color: #38bdf8;
+
+/* =========================
+   LINKS
+========================= */
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.nav-item {
+  text-decoration: none;
+  color: #475569;
+
+  padding: 10px 16px;
+
+  border-radius: 12px;
+
+  font-weight: 600;
+
+  transition: .3s;
+}
+
+.nav-item:hover {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+
+/* =========================
+   ADMIN LINK
+========================= */
+
+.admin-link {
+  color: #7c3aed;
+  font-weight: 700;
+}
+
+.admin-link:hover {
+  background: #f3e8ff;
+}
+
+
+/* =========================
+   LOGOUT BUTTON
+========================= */
+
+.logout-btn {
+  background: #ef4444;
+  color: white;
+
+  border: none;
+
+  padding: 10px 16px;
+
+  border-radius: 12px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: .3s;
+}
+
+.logout-btn:hover {
+  background: #dc2626;
+}
+
+
+/* =========================
+   LOGIN BUTTON
+========================= */
+
+.login-link {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 900px) {
+
+  .navbar {
+    padding: 15px 20px;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .nav-links {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 5px;
+  }
+
+  .nav-links::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-item,
+  .logout-btn {
+    white-space: nowrap;
+  }
 }

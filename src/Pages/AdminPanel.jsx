@@ -130,7 +130,7 @@ function AdminPanel() {
     <div className="page-container">
       <div className="admin-header" style={{display: "flex", justifyContent:"space-between", alignItems:"center", marginBottom:"20px"}}>
         <h1 className="admin-title">{isManager ? "Manager Inventory Dashboard" : "Admin Dashboard"}</h1>
-        <div className="user-badge" style={{color: "#fff", background:"#1e293b", padding:"8px 14px", borderRadius:"6px"}}>
+        <div className="user-badge" style={{color: "#000000", background:"#ffffff", padding:"8px 14px", borderRadius:"6px"}}>
           Active Profile: <strong>{user.username}</strong> (<span style={{color: isManager ? "#38bdf8" : "#a78bfa"}}>{user.role.toUpperCase()}</span>)
         </div>
       </div>
@@ -225,7 +225,7 @@ function AdminPanel() {
                   <tr key={u.id}>
                     <td><strong>{u.username}</strong></td>
                     <td><code>{u.password}</code></td>
-                    <td><span className={`role-tag ${u.role}`} style={{padding:'2px 6px', borderRadius:'4px', fontSize:'12px', background:'#334155'}}>{u.role}</span></td>
+                    <td><span className={`role-tag ${u.role}`} style={{padding:'10px', borderRadius:'4px', fontSize:'12px', background:'#e2e6eb' , font:'small' }}>{u.role}</span></td>
                     <td>
                       <button className="delete-btn" disabled={u.username === user.username} onClick={() => deleteUser(u.id, u.username)}>
                         {u.username === user.username ? "Active Current Self" : "Revoke Access Token"}

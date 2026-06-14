@@ -13,8 +13,8 @@ html {
 }
 
 body {
-  background: #0f172a;
-  color: #f8fafc;
+  background: #f4f7fc;
+  color: #0f172a;
   font-family: "Inter", sans-serif;
   min-height: 100vh;
   overflow-x: hidden;
@@ -27,13 +27,13 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #0f172a;
+  background: #e2e8f0;
 }
 
 ::-webkit-scrollbar-thumb {
   background: linear-gradient(
     180deg,
-    #38bdf8,
+    #60a5fa,
     #2563eb
   );
   border-radius: 20px;
@@ -66,8 +66,10 @@ input,
 select,
 textarea {
   outline: none;
-  border: none;
+  border: 1px solid #dbe2ea;
   font-family: inherit;
+  background: white;
+  color: #1e293b;
 }
 
 /* IMAGES */
@@ -80,8 +82,8 @@ img {
 /* CONTAINERS */
 
 .page-container {
-  padding: 30px;
   width: 100%;
+  padding: 30px;
 }
 
 /* TITLES */
@@ -90,34 +92,36 @@ img {
 .inventory-title,
 .order-title,
 .add-product-title,
-.admin-title {
+.admin-title,
+.orders-title {
   font-size: 38px;
   font-weight: 800;
   margin-bottom: 30px;
-  color: white;
+  color: #1e293b;
 }
 
 /* CARDS */
 
 .card {
-  background: linear-gradient(
-    135deg,
-    #1e293b,
-    #334155
-  );
+  background: white;
+
+  border: 1px solid #e2e8f0;
 
   border-radius: 22px;
 
   padding: 25px;
 
   box-shadow:
-    0 10px 30px rgba(0,0,0,0.25);
+    0 8px 25px rgba(15, 23, 42, 0.08);
 
   transition: 0.3s ease;
 }
 
 .card:hover {
   transform: translateY(-6px);
+
+  box-shadow:
+    0 15px 35px rgba(15, 23, 42, 0.12);
 }
 
 /* FLEX */
@@ -141,15 +145,15 @@ img {
 /* TEXT COLORS */
 
 .text-primary {
-  color: #38bdf8;
+  color: #2563eb;
 }
 
 .text-success {
-  color: #22c55e;
+  color: #16a34a;
 }
 
 .text-danger {
-  color: #ef4444;
+  color: #dc2626;
 }
 
 .text-warning {
@@ -159,11 +163,15 @@ img {
 /* BACKGROUND COLORS */
 
 .bg-primary {
-  background: #38bdf8;
+  background: #2563eb;
 }
 
-.bg-dark {
-  background: #1e293b;
+.bg-light {
+  background: #ffffff;
+}
+
+.bg-secondary {
+  background: #f8fafc;
 }
 
 /* TABLES */
@@ -182,18 +190,18 @@ table {
 /* GLASS EFFECT */
 
 .glass {
-  background: rgba(30, 41, 59, 0.7);
+  background: rgba(255,255,255,0.75);
 
   backdrop-filter: blur(10px);
 
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid rgba(226,232,240,0.8);
 }
 
 /* SHADOWS */
 
 .shadow {
   box-shadow:
-    0 8px 20px rgba(0,0,0,0.25);
+    0 8px 20px rgba(15,23,42,0.08);
 }
 
 /* BORDER RADIUS */
@@ -245,6 +253,7 @@ table {
     opacity: 1;
     transform: translateY(0);
   }
+
 }
 
 /* RESPONSIVE */
@@ -259,7 +268,9 @@ table {
   .inventory-title,
   .order-title,
   .add-product-title,
-  .admin-title {
+  .admin-title,
+  .orders-title {
     font-size: 28px;
   }
+
 }

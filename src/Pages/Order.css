@@ -2,11 +2,9 @@
    1. BASE PAGE & DASHBOARD LAYOUT (SCREEN DISPLAY ONLY)
    ========================================================================== */
 .page-container {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  margin: 0;
-  padding: 20px;
-  background-color: #f4f6f9;
+  background: #f4f7fc;
   min-height: 100vh;
+  padding: 30px;
 }
 
 .tabs-header-row {
@@ -32,9 +30,16 @@
 }
 
 .tab-btn.active-tab {
-  background-color: #007bff;
+  background: linear-gradient(
+    135deg,
+    #3b82f6,
+    #2563eb
+  );
+
   color: white;
-  box-shadow: 0 4px 6px -1px rgba(0, 123, 255, 0.4);
+
+  box-shadow:
+    0 8px 20px rgba(37,99,235,.25);
 }
 
 .billing-system-title {
@@ -50,20 +55,20 @@
 
 .left-workspace-panel {
   flex: 2;
-  background:#0f172a;
+  background: #ffffff;
   padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  border-radius: 18px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 8px 24px rgba(15,23,42,.08);
 }
-
 .right-workspace-panel.side-billing-summary-card {
   flex: 1;
-  background: #0f172a;
+  background: #ffffff;
   padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  height: fit-content;
+  border-radius: 18px;
   border: 1px solid #e2e8f0;
+  box-shadow: 0 8px 24px rgba(15,23,42,.08);
+  height: fit-content;
 }
 
 .barcode-input-container {
@@ -111,27 +116,27 @@
 }
 
 .basket-data-table th {
-  background-color: transparent;
+  background: #f8fafc;
   color: #64748b;
-  padding: 12px;
-  font-weight: 600;
-  border: 1px solid #e2e8f0;
+  padding: 14px;
+  font-weight: 700;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .basket-data-table td {
   padding: 14px 12px;
   border-bottom: 1px solid #e2e8f0;
+  color: #334155;
   vertical-align: middle;
 }
-
 .barcode-cell-dim {
   color: #94a3b8;
   font-size: 13px;
 }
 
 .product-title-bold-cell {
-  font-weight: 600;
-  color: #334155;
+  font-weight: 700;
+  color: #0f172a;
 }
 
 .table-qty-input {
@@ -143,8 +148,8 @@
 }
 
 .item-row-total-accent {
-  font-weight: 600;
-  color: #0f172a;
+  font-weight: 700;
+  color: #2563eb;
 }
 
 .table-row-delete-btn {
@@ -184,7 +189,7 @@
 .summary-input-group label {
   font-size: 13px;
   font-weight: 600;
-  color: #475569;
+  color: #64748b;
 }
 
 .summary-input-group input {
@@ -224,15 +229,15 @@
 }
 
 .grand-total-highlight-row {
-  font-size: 18px;
-  color: #1e293b;
-  padding: 10px 0;
+  font-size: 20px;
+  color: #0f172a;
+  padding: 14px 0;
   border-top: 1px solid #e2e8f0;
   border-bottom: 1px solid #e2e8f0;
 }
 
 .grand-total-highlight-row strong {
-  color: #0284c7;
+  color: #2563eb;
 }
 
 .change-return-highlight-row {
@@ -542,11 +547,12 @@
   }
 }
 .payment-select-dropdown {
-  padding: 10px;
+  padding: 12px;
   border: 1px solid #cbd5e1;
-  border-radius: 6px;
+  border-radius: 10px;
   font-size: 14px;
-  background-color: #0f172a;
+  background: white;
+  color: #1e293b;
   cursor: pointer;
 }
 .payment-select-dropdown:focus {
