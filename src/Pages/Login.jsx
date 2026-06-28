@@ -1,17 +1,17 @@
 import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import "./Login.css"; 
+import { supabase } from "../lib/supabaseClient";
+import "./Login.css";
 
 function Login() {
-  const { login } = useContext(AuthContext);
+  const { login, addLog } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // Input Field States
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  // SIGN IN SUBMISSION HANDLER
   async function handleLogin(e) {
     e.preventDefault();
 
@@ -20,81 +20,106 @@ function Login() {
       return;
     }
 
+    setLoading(true);
+
     try {
-      const response = await fetch("http://localhost:3000/users");
-      const users = await response.json();
+      const { data, error } = await supabase
+        .from("users")
+        .select("id, username, password, role")
+        .ilike("username", username.trim())
+        .limit(1);
 
-      // Look for credential matching inside your mock backend database
-      const matchedUser = users.find(
-        (u) =>
-          u.username.toLowerCase() === username.toLowerCase() &&
-          u.password === password
-      );
+      if (error) throw error;
 
-      if (matchedUser) {
-        login(matchedUser); // Saves user object securely in your AuthContext state
-        alert(`Successfully signed in as ${matchedUser.role}!`);
+      if (!data || data.length === 0) {
+        // Log failed login
+        addLog(`SECURITY: Failed login attempt for username "${username}" - User not found`, {
+          type: "login_failed",
+          attemptedUsername: username,
+          reason: "user_not_found",
+        });
+        alert("Invalid Username or Password.");
+        return;
+      }
 
-        // Routes user smoothly based on their security rank
-        if (matchedUser.role === "admin" || matchedUser.role === "manager") {
-          navigate("/admin");
-        } else {
-          navigate("/");
-        }
+      const matchedUser = data[0];
+
+      if (matchedUser.password !== password) {
+        // Log failed password
+        addLog(`SECURITY: Failed login attempt for "${matchedUser.username}" - Wrong password`, {
+          type: "login_failed",
+          attemptedUsername: matchedUser.username,
+          reason: "wrong_password",
+        });
+        alert("Invalid Username or Password.");
+        return;
+      }
+
+      const safeUser = {
+        id: matchedUser.id,
+        username: matchedUser.username,
+        role: matchedUser.role,
+      };
+
+      login(safeUser);
+      alert(`Successfully signed in as ${safeUser.role}!`);
+
+      if (safeUser.role === "admin" || safeUser.role === "manager") {
+        navigate("/admin");
       } else {
-        alert(
-          "Invalid Username or Password. Please check your credentials or contact your administrator."
-        );
+        navigate("/");
       }
     } catch (error) {
-      console.error("Login Connection Error:", error);
-      alert("Backend server (port 3000) is offline!");
+      console.error("Login Connection Error:", error.message);
+      addLog(`SYSTEM: Login error - ${error.message}`, {
+        type: "system_error",
+        error: error.message,
+      });
+      alert(`Login failed: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
   }
 
-  // FORGOT PASSWORD ACTION HANDLER
   function handleForgotPassword() {
-    const enteredUser = prompt(
-      "Please enter your Username to recover your account security credentials:"
-    );
+    const enteredUser = prompt("Enter your Username to recover password:");
     if (!enteredUser) return;
 
-    alert(
-      `A password reset request for "${enteredUser}" has been notified. Please contact your system manager to reset your password profile.`
-    );
+    addLog(`SECURITY: Password reset requested for "${enteredUser}"`, {
+      type: "password_reset_request",
+      requestedFor: enteredUser,
+    });
+
+    alert(`Password reset request for "${enteredUser}" has been notified to admin.`);
   }
 
   return (
     <div className="login-page-wrapper">
       <div className="auth-card-box">
-        <h2>Mecora Staff Login</h2> 
+        <h2>Mecora Staff Login</h2>
 
-        {/* LOGIN FORM VIEW */}
         <form onSubmit={handleLogin} className="auth-form-element">
           <input
             type="text"
             placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
+            disabled={loading}
           />
           <input
             type="password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            disabled={loading}
           />
-          <button type="submit" className="action-submit-btn">
-            Sign In
+          <button type="submit" className="action-submit-btn" disabled={loading}>
+            {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
 
-        {/* COMPONENT FOOTER NAVIGATION ACTIONS */}
-        <div className="auth-helper-links" style={{ display: "flex", justifyContent: "center", marginTop: "15px" }}>
-          <button
-            type="button"
-            onClick={handleForgotPassword}
-            className="link-style-btn forgot-btn"
-          >
+        <div className="auth-helper-links">
+          <button type="button" onClick={handleForgotPassword} className="link-style-btn forgot-btn">
             Forgot Password?
           </button>
         </div>

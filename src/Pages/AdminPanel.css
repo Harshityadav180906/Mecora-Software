@@ -1,297 +1,753 @@
 /* ======================================
-   PAGE
+   BASE / MOBILE-FIRST STYLES
 ====================================== */
 
 .page-container {
-  padding: 24px;
+  padding: 16px;
   background: #f4f7fc;
   min-height: 100vh;
 }
 
-
 /* ======================================
-   ADMIN GRID
+   ADMIN HEADER
 ====================================== */
 
-.admin-grid {
+.admin-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.admin-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.user-badge {
+  color: #1e293b;
+  background: #ffffff;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(15,23,42,.06);
+}
+
+.role-text {
+  font-weight: 700;
+}
+
+.role-text.manager {
+  color: #38bdf8;
+}
+
+.role-text.admin {
+  color: #8b5cf6;
+}
+
+/* ======================================
+   DASHBOARD CARDS - MOBILE
+====================================== */
+
+.dashboard-cards {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  margin-bottom: 30px;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
-@media (max-width: 768px) {
-  .admin-grid {
-    grid-template-columns: 1fr;
-  }
+.card {
+  background: #ffffff;
+  padding: 18px 20px;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 12px rgba(15,23,42,.06);
+  transition: 0.3s ease;
 }
 
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(15,23,42,.1);
+}
+
+.card h2 {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.card p {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.card-blue {
+  border-left: 4px solid #38bdf8;
+}
+
+.card-blue p {
+  color: #38bdf8;
+}
+
+.card-warning {
+  border-left: 4px solid #f59e0b;
+}
+
+.card-warning p {
+  color: #f59e0b;
+}
+
+.card-danger {
+  border-left: 4px solid #ef4444;
+}
+
+.card-danger p {
+  color: #ef4444;
+}
 
 /* ======================================
-   ALERT CARDS
+   ADMIN SECTIONS
 ====================================== */
 
-.danger-card {
-  border-left: 5px solid #f59e0b !important;
+.admin-section {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 16px rgba(15,23,42,.06);
+  margin-bottom: 20px;
 }
 
-.critical-card {
-  border-left: 5px solid #ef4444 !important;
+.admin-section h2 {
+  margin-bottom: 16px;
+  color: #0f172a;
+  font-size: 16px;
+  font-weight: 700;
 }
-
 
 /* ======================================
    ALERT ITEMS
 ====================================== */
 
-.alert-item.warning,
-.alert-item.critical {
-
-  background: #ffffff;
-
-  padding: 16px 18px;
-
-  margin: 12px 0;
-
-  border-radius: 18px;
-
-  border: 1px solid #e2e8f0;
-
+.alert-box {
   display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
-  justify-content: space-between;
-
-  align-items: center;
-
-  transition: all .3s ease;
-
-  box-shadow:
-      0 4px 14px rgba(15,23,42,.05);
+.alert-item {
+  background: #ffffff;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(15,23,42,.05);
 }
 
 .alert-item.warning {
-  border-left: 5px solid #f59e0b;
+  border-left: 4px solid #f59e0b;
 }
 
 .alert-item.critical {
-  border-left: 5px solid #ef4444;
+  border-left: 4px solid #ef4444;
 }
 
-.alert-item.warning:hover,
-.alert-item.critical:hover {
-
-  transform: translateY(-3px);
-
-  box-shadow:
-      0 12px 28px rgba(15,23,42,.08);
+.alert-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-
-/* ======================================
-   STATUS PILLS
-====================================== */
-
-.status-pill {
-
-  padding: 7px 14px;
-
-  border-radius: 999px;
-
-  font-size: 13px;
-
+.alert-name {
   font-weight: 700;
+  color: #0f172a;
+  font-size: 15px;
 }
 
-.status-pill.pending {
-
-  background: rgba(245,158,11,.15);
-
-  color: #d97706;
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  width: fit-content;
 }
 
-.status-pill.completed {
-
-  background: rgba(34,197,94,.15);
-
-  color: #16a34a;
+.badge-danger {
+  background: #f44336;
+  color: #fff;
 }
 
+.badge-warning {
+  background: #ff9800;
+  color: #fff;
+}
+
+.restock-btn {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+  min-height: 40px;
+  width: 100%;
+}
+
+.restock-btn:hover {
+  background: #2563eb;
+}
+
+.no-alert {
+  color: #10b981;
+  font-weight: 600;
+  text-align: center;
+  padding: 20px;
+}
 
 /* ======================================
-   LOG CONTAINER
+   LOGS
 ====================================== */
 
 .logs-container {
-
-  background: #ffffff;
-
-  color: #1e293b;
-
-  padding: 20px;
-
-  border-radius: 20px;
-
-  font-family: Consolas, monospace;
-
-  height: 200px;
-
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 16px;
+  border-radius: 12px;
+  font-family: "SF Mono", Consolas, monospace;
+  height: 220px;
   overflow-y: auto;
-
-  border: 1px solid #e2e8f0;
-
-  box-shadow:
-      0 8px 24px rgba(15,23,42,.06);
+  border: 1px solid #1e293b;
 }
 
-
-/* ======================================
-   LOG ENTRY
-====================================== */
-
 .log-entry {
-
-  margin-bottom: 12px;
-
-  font-size: 14px;
-
-  border-bottom: 1px dashed #e2e8f0;
-
-  padding-bottom: 10px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  border-bottom: 1px dashed #334155;
+  padding-bottom: 8px;
+  line-height: 1.5;
 }
 
 .log-entry:last-child {
   border-bottom: none;
 }
 
-
-/* Timestamp */
-
 .log-timestamp {
-
   color: #64748b;
-
   font-weight: 700;
-
-  margin-right: 8px;
+  margin-right: 6px;
 }
-
-
-/* Message */
 
 .log-msg {
-
-  color: #334155;
-
-  line-height: 1.5;
+  color: #cbd5e1;
 }
 
-
-/* ======================================
-   SCROLLBAR
-====================================== */
+.log-msg.log-security {
+  color: #38bdf8;
+}
 
 .logs-container::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 .logs-container::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #1e293b;
 }
 
 .logs-container::-webkit-scrollbar-thumb {
   background: #3b82f6;
-  border-radius: 20px;
+  border-radius: 10px;
 }
 
-.logs-container::-webkit-scrollbar-thumb:hover {
+/* ======================================
+   STAFF FORM
+====================================== */
+
+.staff-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.staff-form input,
+.staff-form select {
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 16px;
+  min-height: 48px;
+  width: 100%;
+  box-sizing: border-box;
+  background: white;
+}
+
+.staff-form input:focus,
+.staff-form select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59,130,246,.15);
+}
+
+.primary-btn {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+  min-height: 48px;
+  width: 100%;
+}
+
+.primary-btn:hover {
   background: #2563eb;
 }
 
-
 /* ======================================
-   SECTION CARDS
+   USERS TABLE
 ====================================== */
 
-.admin-section {
-
-  background: #ffffff;
-
-  padding: 24px;
-
-  border-radius: 22px;
-
+.table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 12px;
   border: 1px solid #e2e8f0;
-
-  box-shadow:
-      0 8px 24px rgba(15,23,42,.06);
-
-  margin-bottom: 30px;
 }
 
-.admin-section h2 {
-
-  margin-bottom: 20px;
-
-  color: #0f172a;
-
-  font-size: 1.4rem;
-
-  font-weight: 700;
-}
-
-
-/* ======================================
-   TABLES
-====================================== */
-
-table {
-
+.users-table {
   width: 100%;
-
+  min-width: 600px;
   border-collapse: collapse;
 }
 
-th {
-
+.users-table thead {
   background: #f8fafc;
+}
 
+.users-table th {
+  padding: 14px 12px;
+  text-align: left;
   color: #64748b;
-
-  padding: 16px;
-
-  font-size: 13px;
-
+  font-size: 12px;
   font-weight: 700;
-
   text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
-td {
-
-  padding: 16px;
-
-  color: #334155;
-
+.users-table td {
+  padding: 14px 12px;
   border-bottom: 1px solid #e2e8f0;
+  color: #334155;
+  font-size: 14px;
+  vertical-align: middle;
 }
 
-tr:hover {
-
+.users-table tbody tr:hover {
   background: #f8fafc;
+}
+
+.user-name {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+code {
+  background: #f1f5f9;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #ef4444;
+}
+
+.role-tag {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.role-tag.admin {
+  background: #ede9fe;
+  color: #7c3aed;
+}
+
+.role-tag.manager {
+  background: #e0f2fe;
+  color: #0284c7;
+}
+
+.role-tag.employee {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.delete-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  transition: 0.2s;
+  min-height: 36px;
+}
+
+.delete-btn:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.delete-btn:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* ======================================
+   TABLET BREAKPOINT (481px+)
+====================================== */
+
+@media (min-width: 481px) {
+  .page-container {
+    padding: 20px;
+  }
+
+  .admin-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .admin-title {
+    font-size: 24px;
+  }
+
+  .dashboard-cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  .card p {
+    font-size: 32px;
+  }
+
+  .alert-item {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .alert-info {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .restock-btn {
+    width: auto;
+  }
+
+  .form-row {
+    flex-direction: row;
+  }
+
+  .form-row input,
+  .form-row select {
+    flex: 1;
+  }
+
+  .primary-btn {
+    width: auto;
+    align-self: flex-start;
+    padding: 14px 28px;
+  }
 }
 
 
 /* ======================================
-   EMPTY STATE
+   DESKTOP BREAKPOINT (769px+)
 ====================================== */
 
-.no-data {
+@media (min-width: 769px) {
+  .page-container {
+    padding: 30px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
 
-  text-align: center;
+  .admin-title {
+    font-size: 28px;
+  }
 
-  padding: 40px;
+  .dashboard-cards {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
 
-  color: #94a3b8;
+  .card {
+    padding: 24px;
+    border-radius: 18px;
+  }
 
+  .card h2 {
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+
+  .card p {
+    font-size: 38px;
+  }
+
+  .card-blue {
+    border-left: 5px solid #38bdf8;
+  }
+
+  .card-warning {
+    border-left: 5px solid #f59e0b;
+  }
+
+  .card-danger {
+    border-left: 5px solid #ef4444;
+  }
+
+  .admin-section {
+    padding: 28px;
+    border-radius: 20px;
+    margin-bottom: 30px;
+  }
+
+  .admin-section h2 {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+
+  .alert-item {
+    padding: 16px 20px;
+    border-radius: 14px;
+  }
+
+  .logs-container {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .log-entry {
+    font-size: 14px;
+  }
+
+  .users-table th,
+  .users-table td {
+    padding: 16px;
+  }
+
+  .users-table {
+    min-width: 0;
+  }
+}
+
+
+/* ======================================
+   LARGE DESKTOP (1025px+)
+====================================== */
+
+@media (min-width: 1025px) {
+  .dashboard-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+/* ======================================
+   EDIT FORM STYLES
+====================================== */
+
+.form-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.secondary-btn {
+  background: #e2e8f0;
+  color: #475569;
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
   font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+  min-height: 48px;
+  width: 100%;
+}
+
+.secondary-btn:hover {
+  background: #cbd5e1;
+}
+
+/* ======================================
+   ACTION BUTTONS IN TABLE
+====================================== */
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.edit-btn {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  transition: 0.2s;
+  min-height: 36px;
+}
+
+.edit-btn:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.edit-btn:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* ======================================
+   TABLET+ BREAKPOINT ADJUSTMENTS
+====================================== */
+
+@media (min-width: 481px) {
+  .form-actions {
+    flex-direction: row;
+    gap: 12px;
+  }
+
+  .secondary-btn {
+    width: auto;
+    padding: 14px 28px;
+  }
+
+  .action-buttons {
+    flex-direction: row;
+    gap: 8px;
+  }
+}
+/* ======================================
+   LOG ENTRY ENHANCED
+====================================== */
+
+.log-entry {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  border-bottom: 1px dashed #334155;
+  padding-bottom: 8px;
+  line-height: 1.5;
+}
+
+.log-timestamp {
+  color: #64748b;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.log-user {
+  color: #38bdf8;
+  font-weight: 600;
+}
+
+.log-role {
+  font-size: 10px;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: #334155;
+  color: #cbd5e1;
+}
+
+.log-role.admin {
+  background: #7c3aed;
+  color: #fff;
+}
+
+.log-role.manager {
+  background: #0284c7;
+  color: #fff;
+}
+
+.log-role.employee {
+  background: #16a34a;
+  color: #fff;
+}
+
+.log-msg {
+  color: #cbd5e1;
+  flex: 1;
+  min-width: 200px;
+}
+
+.log-msg.log-security {
+  color: #38bdf8;
+}
+
+.log-msg.log-error {
+  color: #f87171;
+}
+
+.no-logs {
+  color: #64748b;
+  text-align: center;
+  padding: 20px;
+  font-style: italic;
+}
+
+/* ======================================
+   TABLET+ LOGS
+====================================== */
+
+@media (min-width: 769px) {
+  .log-entry {
+    font-size: 14px;
+    gap: 12px;
+  }
+
+  .logs-container {
+    padding: 20px;
+  }
 }

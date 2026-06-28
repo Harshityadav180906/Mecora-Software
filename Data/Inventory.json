@@ -1513,7 +1513,7 @@
       "category": "Medicine",
       "price": 2255,
       "currency": "INR",
-      "stock_quantity": 20,
+      "stock_quantity": 19,
       "supplier": "Na",
       "expiry_date": "2028-05-14",
       "reorder_level": 5,
@@ -1521,7 +1521,7 @@
       "id": "R2gbPqyAbpo",
       "sold_count": 0,
       "last_sold": "",
-      "quantity": 20
+      "quantity": 19
     }
   ],
   "orders": [
@@ -2033,6 +2033,31 @@
       "cashReceived": "50",
       "changeReturned": "20.00",
       "id": "uwOy1w8q3iA"
+    },
+    {
+      "cashMemoNo": 1962,
+      "patientName": "Jagrati",
+      "patientPhone": "9667812705",
+      "patientAddress": "",
+      "doctorName": "Ankur Jain",
+      "products": [
+        {
+          "name": "Bilypsa",
+          "quantity": 1,
+          "pack": "10TAB",
+          "batch": "B393768",
+          "exp": "2028-05-14",
+          "gst": 0,
+          "rate": 2255
+        }
+      ],
+      "totalAmount": 1804,
+      "orderDate": "2026-06-14T11:54:31.197Z",
+      "paymentMethod": "Cash",
+      "createdBy": "Harshit",
+      "cashReceived": "2000",
+      "changeReturned": "196.00",
+      "id": "yaPyh4PlqNc"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

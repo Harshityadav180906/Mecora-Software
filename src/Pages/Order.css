@@ -4,25 +4,35 @@
 .page-container {
   background: #f4f7fc;
   min-height: 100vh;
-  padding: 30px;
+  padding: 12px;
 }
 
 .tabs-header-row {
   display: flex;
-  gap: 10px;
-  margin-bottom: 15px;
+  gap: 8px;
+  margin-bottom: 12px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.tabs-header-row::-webkit-scrollbar {
+  display: none;
 }
 
 .tab-btn {
-  padding: 12px 20px;
-  font-size: 14px;
+  padding: 10px 16px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   background-color: #e2e8f0;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   transition: all 0.2s ease;
   color: #4a5568;
+  white-space: nowrap;
+  min-height: 44px;
+  flex: 1;
 }
 
 .tab-btn:hover {
@@ -30,60 +40,61 @@
 }
 
 .tab-btn.active-tab {
-  background: linear-gradient(
-    135deg,
-    #3b82f6,
-    #2563eb
-  );
-
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
   color: white;
-
-  box-shadow:
-    0 8px 20px rgba(37,99,235,.25);
+  box-shadow: 0 8px 20px rgba(37,99,235,.25);
 }
 
 .billing-system-title {
-  font-size: 22px;
+  font-size: 18px;
   color: #1e293b;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
+  font-weight: 700;
 }
 
+/* Mobile: Stack panels vertically */
 .billing-workspace-layout {
   display: flex;
-  gap: 20px;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .left-workspace-panel {
-  flex: 2;
+  flex: 1;
   background: #ffffff;
-  padding: 20px;
-  border-radius: 18px;
+  padding: 16px;
+  border-radius: 14px;
   border: 1px solid #e2e8f0;
-  box-shadow: 0 8px 24px rgba(15,23,42,.08);
+  box-shadow: 0 4px 16px rgba(15,23,42,.08);
 }
+
 .right-workspace-panel.side-billing-summary-card {
   flex: 1;
   background: #ffffff;
-  padding: 20px;
-  border-radius: 18px;
+  padding: 16px;
+  border-radius: 14px;
   border: 1px solid #e2e8f0;
-  box-shadow: 0 8px 24px rgba(15,23,42,.08);
+  box-shadow: 0 4px 16px rgba(15,23,42,.08);
   height: fit-content;
+  order: -1; /* Summary card appears FIRST on mobile */
 }
 
 .barcode-input-container {
   display: flex;
+  flex-direction: column;
   gap: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .barcode-input-container input {
-  flex: 1;
-  padding: 12px;
-  font-size: 15px;
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
   border: 1px solid #cbd5e1;
-  border-radius: 6px;
+  border-radius: 10px;
   outline: none;
+  box-sizing: border-box;
+  min-height: 48px;
 }
 
 .barcode-input-container input:focus {
@@ -94,23 +105,31 @@
 .add-product-action-btn {
   background: #22c55e;
   color: white;
-  padding: 0 20px;
+  padding: 14px;
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
   font-weight: 600;
+  font-size: 15px;
   cursor: pointer;
+  min-height: 48px;
+  width: 100%;
 }
 
 .add-product-action-btn:hover {
   background: #16a34a;
 }
 
+/* Basket Table - Mobile scrollable */
 .basket-table-wrapper {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
 }
 
 .basket-data-table {
   width: 100%;
+  min-width: 600px;
   border-collapse: collapse;
   text-align: left;
 }
@@ -118,20 +137,26 @@
 .basket-data-table th {
   background: #f8fafc;
   color: #64748b;
-  padding: 14px;
+  padding: 12px;
   font-weight: 700;
   border-bottom: 1px solid #e2e8f0;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 .basket-data-table td {
-  padding: 14px 12px;
+  padding: 12px 10px;
   border-bottom: 1px solid #e2e8f0;
   color: #334155;
   vertical-align: middle;
+  font-size: 14px;
 }
+
 .barcode-cell-dim {
   color: #94a3b8;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .product-title-bold-cell {
@@ -140,26 +165,32 @@
 }
 
 .table-qty-input {
-  width: 60px;
-  padding: 6px;
+  width: 56px;
+  padding: 8px;
   border: 1px solid #cbd5e1;
-  border-radius: 4px;
+  border-radius: 6px;
   text-align: center;
+  font-size: 14px;
+  min-height: 36px;
 }
 
 .item-row-total-accent {
   font-weight: 700;
   color: #2563eb;
+  white-space: nowrap;
 }
 
 .table-row-delete-btn {
   background: transparent;
   color: #ef4444;
   border: 1px solid #fca5a5;
-  padding: 6px 12px;
-  border-radius: 4px;
+  padding: 8px 12px;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
+  font-size: 13px;
+  min-height: 36px;
+  white-space: nowrap;
 }
 
 .table-row-delete-btn:hover {
@@ -174,6 +205,7 @@
   font-style: italic;
 }
 
+/* Side Panel - Mobile */
 .side-panel-inputs-form {
   display: flex;
   flex-direction: column;
@@ -183,7 +215,7 @@
 .summary-input-group {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .summary-input-group label {
@@ -192,11 +224,32 @@
   color: #64748b;
 }
 
-.summary-input-group input {
-  padding: 10px;
+.summary-input-group input,
+.payment-select-dropdown {
+  padding: 12px;
   border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  font-size: 14px;
+  border-radius: 10px;
+  font-size: 16px;
+  min-height: 48px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.summary-input-group input:focus,
+.payment-select-dropdown:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.payment-select-dropdown {
+  background: white;
+  color: #1e293b;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
 }
 
 .side-summary-divider {
@@ -222,14 +275,16 @@
 
 .side-discount-numeric-box {
   width: 70px;
-  padding: 6px;
+  padding: 8px;
   border: 1px solid #cbd5e1;
-  border-radius: 4px;
+  border-radius: 6px;
   text-align: right;
+  font-size: 14px;
+  min-height: 36px;
 }
 
 .grand-total-highlight-row {
-  font-size: 20px;
+  font-size: 18px;
   color: #0f172a;
   padding: 14px 0;
   border-top: 1px solid #e2e8f0;
@@ -241,29 +296,42 @@
 }
 
 .change-return-highlight-row {
-  padding: 10px;
+  padding: 12px;
   background-color: #f0fdf4;
-  border-radius: 6px;
+  border-radius: 8px;
   color: #166534;
+}
+
+.digital-payment-notice {
+  margin-top: 12px;
+  padding: 14px;
+  background-color: #f0f7ff;
+  border-left: 4px solid #0284c7;
+  border-radius: 8px;
+  color: #0369a1;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .generate-bill-action-trigger-btn {
   width: 100%;
-  padding: 14px;
+  padding: 16px;
   background: #007bff;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s;
+  min-height: 52px;
 }
 
 .generate-bill-action-trigger-btn:hover {
   background: #0056b3;
 }
 
+/* Modal - Mobile */
 .bill-generation-overlay-modal {
   position: fixed;
   top: 0;
@@ -276,14 +344,16 @@
   align-items: center;
   justify-content: center;
   z-index: 99999;
+  padding: 16px;
+  box-sizing: border-box;
 }
 
 .bill-generation-modal-card {
   background: white;
-  padding: 30px;
-  border-radius: 12px;
-  max-width: 500px;
-  width: 90%;
+  padding: 24px;
+  border-radius: 16px;
+  max-width: 100%;
+  width: 100%;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
   text-align: center;
 }
@@ -291,12 +361,14 @@
 .bill-generation-modal-card h2 {
   margin-top: 0;
   color: #1e293b;
+  font-size: 20px;
 }
 
 .bill-generation-modal-card p {
   color: #64748b;
-  font-size: 15px;
-  margin-bottom: 25px;
+  font-size: 14px;
+  margin-bottom: 20px;
+  line-height: 1.5;
 }
 
 .modal-actions-wrapper-row {
@@ -306,13 +378,14 @@
 }
 
 .modal-btn {
-  padding: 12px;
+  padding: 14px;
   font-size: 15px;
   font-weight: 600;
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
   cursor: pointer;
   transition: background 0.2s;
+  min-height: 48px;
 }
 
 .confirm-print-btn {
@@ -345,14 +418,116 @@
 
 
 /* ==========================================================================
-   2. FIXED PRINT MEDIA SUB-ENGINE
+   2. TABLET BREAKPOINT (601px+)
+   ========================================================================== */
+@media (min-width: 601px) {
+  .page-container {
+    padding: 20px;
+  }
+
+  .billing-system-title {
+    font-size: 20px;
+  }
+
+  .barcode-input-container {
+    flex-direction: row;
+  }
+
+  .barcode-input-container input {
+    flex: 1;
+  }
+
+  .add-product-action-btn {
+    width: auto;
+    padding: 0 24px;
+  }
+
+  .right-workspace-panel.side-billing-summary-card {
+    order: 0;
+  }
+
+  .modal-actions-wrapper-row {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .modal-btn {
+    flex: 1;
+    max-width: 200px;
+  }
+
+  .bill-generation-modal-card {
+    max-width: 500px;
+    padding: 30px;
+  }
+}
+
+
+/* ==========================================================================
+   3. DESKTOP BREAKPOINT (769px+)
+   ========================================================================== */
+@media (min-width: 769px) {
+  .page-container {
+    padding: 30px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .tabs-header-row {
+    margin-bottom: 15px;
+  }
+
+  .tab-btn {
+    padding: 12px 20px;
+    font-size: 14px;
+    flex: 0 0 auto;
+  }
+
+  .billing-system-title {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+
+  .billing-workspace-layout {
+    flex-direction: row;
+    gap: 20px;
+  }
+
+  .left-workspace-panel {
+    flex: 2;
+    padding: 20px;
+    border-radius: 18px;
+  }
+
+  .right-workspace-panel.side-billing-summary-card {
+    flex: 1;
+    padding: 20px;
+    border-radius: 18px;
+  }
+
+  .basket-data-table th {
+    padding: 14px;
+    font-size: 13px;
+  }
+
+  .basket-data-table td {
+    padding: 14px 12px;
+  }
+}
+
+
+/* ==========================================================================
+   4. FIXED PRINT MEDIA SUB-ENGINE - NAVBAR HIDDEN
    ========================================================================== */
 @media print {
+  /* Hide ALL screen elements including navbar */
   .screen-only-view, 
   .bill-generation-overlay-modal,
   nav, 
   .navbar, 
-  .sidebar {
+  .sidebar,
+  .tabs-header-row,
+  .page-container > *:not(.print-only-layout-engine) {
     display: none !important;
     visibility: hidden !important;
   }
@@ -545,27 +720,4 @@
     border-top: 1px dashed #000 !important;
     padding-top: 4px !important;
   }
-}
-.payment-select-dropdown {
-  padding: 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 10px;
-  font-size: 14px;
-  background: white;
-  color: #1e293b;
-  cursor: pointer;
-}
-.payment-select-dropdown:focus {
-  border-color: #007bff;
-  outline: none;
-}
-.digital-payment-notice {
-  margin-top: 12px;
-  padding: 12px;
-  background-color: #f0f7ff;
-  border-left: 4px solid #0284c7;
-  border-radius: 4px;
-  color: #0369a1;
-  font-size: 13px;
-  line-height: 1.4;
 }

@@ -1,9 +1,9 @@
 import { createContext, useState, useEffect } from "react";
+import { supabase } from "../lib/supabaseClient";
 
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  // Persistence handler
   const [user, setUser] = useState(() => {
     const savedUser = localStorage.getItem("mecora_session_user");
     return savedUser ? JSON.parse(savedUser) : null;
@@ -11,76 +11,153 @@ export function AuthProvider({ children }) {
 
   const [items, setItems] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [logs, setLogs] = useState([]);
 
-  // NEW: Shared logs state initialized across all authorization modules
-  const [logs, setLogs] = useState([
-    { id: 1, action: "Core Auth Network Initialized", time: new Date().toLocaleTimeString() }
-  ]);
+  // ── FETCH LOGS FROM SUPABASE ──────────────────────────────────────────────
+  async function fetchLogs() {
+    try {
+      const { data, error } = await supabase
+        .from("activity_logs")
+        .select("*")
+        .order("timestamp", { ascending: false })
+        .limit(100);
 
-  // Global helper to add system events with accurate local time stamps
-  const addLog = (actionText) => {
-    const timestamp = new Date().toLocaleTimeString();
-    setLogs(prev => [{ id: Date.now(), action: actionText, time: timestamp }, ...prev.slice(0, 15)]);
-  };
+      if (error) {
+        // Silently fail if table doesn't exist
+        console.warn("Logs fetch warning:", error.message);
+        return;
+      }
 
+      const formattedLogs = (data || []).map((log) => ({
+        id: log.id,
+        action: log.action,
+        time: new Date(log.timestamp).toLocaleTimeString(),
+        username: log.username,
+        role: log.role,
+        details: log.details,
+      }));
+
+      setLogs(formattedLogs);
+    } catch (error) {
+      console.error("Error fetching logs:", error.message);
+    }
+  }
+
+  // ── ADD LOG TO SUPABASE ───────────────────────────────────────────────────
+  async function addLog(actionText, details = {}) {
+    const timestamp = new Date().toISOString();
+    const username = user?.username || "SYSTEM";
+    const role = user?.role || "system";
+
+    const logEntry = {
+      id: Date.now(),
+      action: actionText,
+      time: new Date().toLocaleTimeString(),
+      username,
+      role,
+      details,
+    };
+
+    // Always update local state
+    setLogs((prev) => [logEntry, ...prev.slice(0, 99)]);
+
+    // Try to save to Supabase (silently fail if table missing/RLS blocked)
+    try {
+      const { error } = await supabase.from("activity_logs").insert([
+        {
+          action: actionText,
+          username: username,
+          role: role,
+          timestamp: timestamp,
+          details: details,
+        },
+      ]);
+
+      if (error) {
+        console.warn("Log save warning:", error.message);
+      }
+    } catch (error) {
+      console.warn("Log save warning:", error.message);
+    }
+  }
+
+  // ── FETCH ITEMS ───────────────────────────────────────────────────────────
   async function fetchItems() {
-    try {
-      const response = await fetch("http://localhost:3000/items");
-      const data = await response.json();
+    const { data, error } = await supabase.from("items").select("*");
+    if (error) {
+      console.error("Error fetching items:", error.message);
+    } else {
       setItems(data || []);
-    } catch (error) {
-      console.error("Global Error fetching items:", error);
     }
   }
 
+  // ── FETCH ORDERS ───────────────────────────────────────────────────────────
   async function fetchOrders() {
-    try {
-      const response = await fetch("http://localhost:3000/orders");
-      const data = await response.json();
+    const { data, error } = await supabase
+      .from("orders")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Error fetching orders:", error.message);
+    } else {
       setOrders(data || []);
-    } catch (error) {
-      console.error("Global Error fetching orders:", error);
     }
   }
 
-  // UPDATED: Captures dynamic user login details
-  function login(userData) {
-    setUser(userData);
-    localStorage.setItem("mecora_session_user", JSON.stringify(userData));
-    addLog(`SECURITY AUDIT: User "${userData.username}" successfully logged in [Role: ${userData.role}]`);
+  // ── LOGIN ─────────────────────────────────────────────────────────────────
+  function login(userObject) {
+    if (!userObject || !userObject.id || !userObject.username) {
+      return { success: false, message: "Invalid user data." };
+    }
+
+    setUser(userObject);
+    localStorage.setItem("mecora_session_user", JSON.stringify(userObject));
+    return { success: true };
   }
 
-  // UPDATED: Captures dynamic user logout details
+  // ── LOGOUT ────────────────────────────────────────────────────────────────
   function logout() {
     if (user) {
-      addLog(`SECURITY AUDIT: User "${user.username}" successfully logged out [Role: ${user.role}]`);
+      addLog(`SECURITY: User "${user.username}" logged out`, {
+        type: "logout",
+        username: user.username,
+        role: user.role,
+      });
     }
     setUser(null);
     localStorage.removeItem("mecora_session_user");
   }
 
   useEffect(() => {
+    fetchLogs();
     if (user) {
       fetchItems();
       fetchOrders();
+      addLog(`SECURITY: User "${user.username}" logged in`, {
+        type: "login",
+        username: user.username,
+        role: user.role,
+      });
     }
   }, [user]);
 
   return (
-    <AuthContext.Provider 
-      value={{ 
-        user, 
+    <AuthContext.Provider
+      value={{
+        user,
         setUser,
         login,
         logout,
-        items, 
-        setItems, 
-        fetchItems, 
-        orders, 
-        setOrders, 
+        items,
+        setItems,
+        fetchItems,
+        orders,
+        setOrders,
         fetchOrders,
-        logs,      // Exposed to display on dashboards
-        addLog     // Exposed to log manual administrative updates
+        logs,
+        addLog,
+        fetchLogs,
       }}
     >
       {children}

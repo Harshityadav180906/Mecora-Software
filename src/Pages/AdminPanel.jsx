@@ -1,33 +1,42 @@
 import { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { Navigate } from "react-router-dom";
-import "./AdminPanel.css"; 
+import { supabase } from "../lib/supabaseClient";
+import "./AdminPanel.css";
 
 function AdminPanel() {
-  // Consuming global logs and addLog engines from global app context
-  const { user, items, fetchItems, orders, fetchOrders, logs, addLog } = useContext(AuthContext);
+  const { user, items, setItems, fetchItems, logs, addLog } = useContext(AuthContext);
 
   const [users, setUsers] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("employee");
 
+  // Edit state
+  const [editingUser, setEditingUser] = useState(null);
+  const [editUsername, setEditUsername] = useState("");
+  const [editPassword, setEditPassword] = useState("");
+  const [editRole, setEditRole] = useState("employee");
+
   async function fetchUsers() {
     try {
-      const response = await fetch("http://localhost:3000/users");
-      const data = await response.json();
+      const { data, error } = await supabase
+        .from("users")
+        .select("id, username, password, role, created_at")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
       setUsers(data || []);
     } catch (error) {
-      console.error("Error fetching users:", error);
+      console.error("Error fetching users:", error.message);
     }
   }
 
   useEffect(() => {
-    if (user && user.role === "admin") {
+    if (user && (user.role === "admin" || user.role === "manager")) {
       fetchUsers();
+      fetchItems();
     }
-    fetchItems();
-    fetchOrders();
   }, [user]);
 
   if (!user || (user.role !== "admin" && user.role !== "manager")) {
@@ -36,7 +45,7 @@ function AdminPanel() {
 
   const isManager = user.role === "manager";
 
-  // ADD STAFF
+  // ── ADD STAFF ─────────────────────────────────────────────────────────────
   async function addStaff(e) {
     e.preventDefault();
     if (!username || !password) {
@@ -44,49 +53,153 @@ function AdminPanel() {
       return;
     }
 
-    const newUser = {
-      id: Date.now().toString(),
-      username: username,
-      password: password,
-      role: role,
-    };
-
     try {
-      await fetch("http://localhost:3000/users", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newUser),
+      const { data, error } = await supabase
+        .from("users")
+        .insert([
+          {
+            username: username.trim(),
+            password: password,
+            role: role,
+          },
+        ])
+        .select();
+
+      if (error) throw error;
+
+      addLog(`ADMIN: Created staff "${username}" [Role: ${role}]`, {
+        type: "staff_created",
+        targetUser: username,
+        targetRole: role,
+        createdBy: user.username,
       });
+
       alert("Staff Added Successfully");
-      addLog(`ADMIN ACTION: "${user.username}" created staff account "${username}" [Role: ${role}]`);
       setUsername("");
       setPassword("");
       setRole("employee");
       fetchUsers();
     } catch (error) {
-      console.error(error);
+      console.error("Add staff failed:", error.message);
+      addLog(`ADMIN ERROR: Failed to create staff "${username}" - ${error.message}`, {
+        type: "staff_create_failed",
+        targetUser: username,
+        error: error.message,
+      });
+      alert("Failed to add staff: " + error.message);
     }
   }
 
-  // DELETE USER
-  async function deleteUser(id, targetName) {
-    if(!window.confirm(`Are you sure you want to delete ${targetName}?`)) return;
-    try {
-      await fetch(`http://localhost:3000/users/${id}`, {
-        method: "DELETE",
+  // ── START EDIT ────────────────────────────────────────────────────────────
+  function startEditUser(targetUser) {
+    setEditingUser(targetUser);
+    setEditUsername(targetUser.username);
+    setEditPassword(targetUser.password);
+    setEditRole(targetUser.role);
+
+    addLog(`ADMIN: Started editing user "${targetUser.username}"`, {
+      type: "staff_edit_started",
+      targetUser: targetUser.username,
+    });
+  }
+
+  function cancelEdit() {
+    if (editingUser) {
+      addLog(`ADMIN: Cancelled editing user "${editingUser.username}"`, {
+        type: "staff_edit_cancelled",
+        targetUser: editingUser.username,
       });
-      addLog(`ADMIN ACTION: "${user.username}" revoked system access for account "${targetName}"`);
+    }
+    setEditingUser(null);
+    setEditUsername("");
+    setEditPassword("");
+    setEditRole("employee");
+  }
+
+  // ── SAVE EDIT ─────────────────────────────────────────────────────────────
+  async function saveEditUser(e) {
+    e.preventDefault();
+    if (!editUsername || !editPassword) {
+      alert("Please fill all fields");
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from("users")
+        .update({
+          username: editUsername.trim(),
+          password: editPassword,
+          role: editRole,
+        })
+        .eq("id", editingUser.id);
+
+      if (error) throw error;
+
+      addLog(`ADMIN: Updated staff "${editingUser.username}" → "${editUsername}" [Role: ${editRole}]`, {
+        type: "staff_updated",
+        oldUsername: editingUser.username,
+        newUsername: editUsername,
+        newRole: editRole,
+        updatedBy: user.username,
+      });
+
+      alert("Staff updated successfully");
+      cancelEdit();
       fetchUsers();
     } catch (error) {
-      console.error(error);
+      console.error("Update staff failed:", error.message);
+      addLog(`ADMIN ERROR: Failed to update staff "${editingUser.username}" - ${error.message}`, {
+        type: "staff_update_failed",
+        targetUser: editingUser.username,
+        error: error.message,
+      });
+      alert("Failed to update staff: " + error.message);
     }
   }
 
-  // RESTOCK PROCESSING TRIGGER
+  // ── DELETE USER ───────────────────────────────────────────────────────────
+  async function deleteUser(id, targetName) {
+    if (!window.confirm(`Are you sure you want to delete ${targetName}?`)) {
+      addLog(`ADMIN: Cancelled deletion of "${targetName}"`, {
+        type: "staff_delete_cancelled",
+        targetUser: targetName,
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase.from("users").delete().eq("id", id);
+
+      if (error) throw error;
+
+      addLog(`ADMIN: Revoked access for "${targetName}"`, {
+        type: "staff_deleted",
+        targetUser: targetName,
+        deletedBy: user.username,
+      });
+
+      fetchUsers();
+      alert(`User ${targetName} deleted successfully`);
+    } catch (error) {
+      console.error("Delete user failed:", error.message);
+      addLog(`ADMIN ERROR: Failed to delete "${targetName}" - ${error.message}`, {
+        type: "staff_delete_failed",
+        targetUser: targetName,
+        error: error.message,
+      });
+      alert("Failed to delete user: " + error.message);
+    }
+  }
+
+  // ── RESTOCK ───────────────────────────────────────────────────────────────
   async function quickRestock(id, itemName, currentStock) {
-    const additionalStock = prompt(`Restock ${itemName}\nEnter quantity value to add to stock (${currentStock} left):`, "50");
-    if (additionalStock === null) return; 
-    
+    const additionalStock = prompt(
+      `Restock ${itemName}\nEnter quantity to add (current: ${currentStock}):`,
+      "50"
+    );
+    if (additionalStock === null) return;
+
     const parsedAdd = parseInt(additionalStock, 10);
     if (isNaN(parsedAdd) || parsedAdd <= 0) {
       alert("Please enter a valid positive number.");
@@ -96,29 +209,49 @@ function AdminPanel() {
     const updatedStock = Number(currentStock) + parsedAdd;
 
     try {
-      const response = await fetch(`http://localhost:3000/items/${id}`, {
-        method: "PATCH", 
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ stock_quantity: updatedStock }),
+      const { error } = await supabase
+        .from("items")
+        .update({
+          stock_quantity: updatedStock,
+          quantity: updatedStock,
+        })
+        .eq("id", id);
+
+      if (error) throw error;
+
+      addLog(`INVENTORY: Restocked "${itemName}" +${parsedAdd} units (new total: ${updatedStock})`, {
+        type: "restock",
+        itemName: itemName,
+        itemId: id,
+        added: parsedAdd,
+        newTotal: updatedStock,
+        restockedBy: user.username,
       });
 
-      if(response.ok) {
-        alert("Stock replenished successfully!");
-        addLog(`INVENTORY ACTION: "${user.username}" restocked "${itemName}" (+${parsedAdd} units).`);
-        fetchItems(); 
-      } else {
-        throw new Error("Server database error");
-      }
+      alert("Stock replenished successfully!");
+
+      setItems((prev) =>
+        prev.map((item) =>
+          item.id === id
+            ? { ...item, stock_quantity: updatedStock, quantity: updatedStock }
+            : item
+        )
+      );
     } catch (error) {
-      console.error("Failed stock patching transaction:", error);
-      alert("Failed to modify backend values.");
+      console.error("Restock failed:", error.message);
+      addLog(`INVENTORY ERROR: Failed to restock "${itemName}" - ${error.message}`, {
+        type: "restock_failed",
+        itemName: itemName,
+        error: error.message,
+      });
+      alert("Failed to restock: " + error.message);
     }
   }
 
   const lowStockItems = items.filter((item) => {
     const stock = Number(item.stock_quantity || 0);
     const reorder = Number(item.reorder_level || 10);
-    return stock > 0 && stock <= reorder; 
+    return stock > 0 && stock <= reorder;
   });
 
   const outOfStockItems = items.filter((item) => {
@@ -128,48 +261,62 @@ function AdminPanel() {
 
   return (
     <div className="page-container">
-      <div className="admin-header" style={{display: "flex", justifyContent:"space-between", alignItems:"center", marginBottom:"20px"}}>
-        <h1 className="admin-title">{isManager ? "Manager Inventory Dashboard" : "Admin Dashboard"}</h1>
-        <div className="user-badge" style={{color: "#000000", background:"#ffffff", padding:"8px 14px", borderRadius:"6px"}}>
-          Active Profile: <strong>{user.username}</strong> (<span style={{color: isManager ? "#38bdf8" : "#a78bfa"}}>{user.role.toUpperCase()}</span>)
+      <div className="admin-header">
+        <h1 className="admin-title">
+          {isManager ? "Manager Inventory Dashboard" : "Admin Dashboard"}
+        </h1>
+        <div className="user-badge">
+          Active: <strong>{user.username}</strong> (
+          <span className={`role-text ${isManager ? "manager" : "admin"}`}>
+            {user.role.toUpperCase()}
+          </span>
+          )
         </div>
       </div>
 
-      {/* RENDER STATS CARDS */}
+      {/* STATS */}
       <div className="dashboard-cards">
-        <div className="card" style={{borderLeft: "5px solid #38bdf8"}}><h2>Total Tracked Products</h2><p>{items.length}</p></div>
-        <div className="card danger-card"><h2>Low Stock Warning</h2><p style={{color: "#ff9800", fontWeight: "bold"}}>{lowStockItems.length}</p></div>
-        <div className="card critical-card"><h2>Critical Out Of Stock</h2><p style={{color: "#f44336", fontWeight: "bold"}}>{outOfStockItems.length}</p></div>
+        <div className="card card-blue">
+          <h2>Total Products</h2>
+          <p>{items.length}</p>
+        </div>
+        <div className="card card-warning">
+          <h2>Low Stock</h2>
+          <p>{lowStockItems.length}</p>
+        </div>
+        <div className="card card-danger">
+          <h2>Out Of Stock</h2>
+          <p>{outOfStockItems.length}</p>
+        </div>
       </div>
 
-      {/* STOCK ALERT LAYOUT ENGINE */}
-      <div className="admin-section alert-section" style={{marginBottom: "25px"}}>
-        <h2>Live Warehouse Stock Alerts</h2>
+      {/* ALERTS */}
+      <div className="admin-section alert-section">
+        <h2>Stock Alerts</h2>
         <div className="alert-box">
           {lowStockItems.length === 0 && outOfStockItems.length === 0 ? (
-            <p className="no-alert">✅ All pharmacy catalog items are currently sufficiently stocked.</p>
+            <p className="no-alert">All items sufficiently stocked.</p>
           ) : (
             <>
               {outOfStockItems.map((item) => (
-                <div key={item.id} className="alert-item critical" style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-                  <div>
-                    <span><strong>{item.name}</strong></span>
-                    <span className="badge out-of-stock-badge" style={{marginLeft:'10px', background:'#f44336', color:'#fff', padding:'2px 6px', borderRadius:'4px', fontSize:'12px'}}>OUT OF STOCK</span>
+                <div key={item.id} className="alert-item critical">
+                  <div className="alert-info">
+                    <span className="alert-name">{item.name}</span>
+                    <span className="badge badge-danger">OUT OF STOCK</span>
                   </div>
-                  <button className="primary-btn" style={{padding:'4px 10px', fontSize:'12px'}} onClick={() => quickRestock(item.id, item.name, 0)}>
-                    + Restock Product
+                  <button className="restock-btn" onClick={() => quickRestock(item.id, item.name, 0)}>
+                    + Restock
                   </button>
                 </div>
               ))}
-              
               {lowStockItems.map((item) => (
-                <div key={item.id} className="alert-item warning" style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-                  <div>
-                    <span><strong>{item.name}</strong></span>
-                    <span className="badge low-stock-badge" style={{marginLeft:'10px', background:'#ff9800', color:'#fff', padding:'2px 6px', borderRadius:'4px', fontSize:'12px'}}>Only {item.stock_quantity} left</span>
+                <div key={item.id} className="alert-item warning">
+                  <div className="alert-info">
+                    <span className="alert-name">{item.name}</span>
+                    <span className="badge badge-warning">Only {item.stock_quantity} left</span>
                   </div>
-                  <button className="primary-btn" style={{padding:'4px 10px', fontSize:'12px'}} onClick={() => quickRestock(item.id, item.name, item.stock_quantity)}>
-                    + Restock Product
+                  <button className="restock-btn" onClick={() => quickRestock(item.id, item.name, item.stock_quantity)}>
+                    + Restock
                   </button>
                 </div>
               ))}
@@ -178,63 +325,100 @@ function AdminPanel() {
         </div>
       </div>
 
-      {/* EVERYONE (MANAGER & ADMIN) CAN VIEW AUDIT LOGS IN REALTIME */}
-      <div className="admin-section" style={{marginBottom: "25px"}}>
-        <h2>Live Application Security Audit Feed</h2>
-        <div className="logs-container" style={{height: "220px"}}>
-          {logs.map((log) => (
-            <div key={log.id} className="log-entry">
-              <span className="log-timestamp">[{log.time}]</span> &rarr; <span className="log-msg" style={{color: log.action.includes("SECURITY") ? "#38bdf8" : "#cbd5e1"}}>{log.action}</span>
-            </div>
-          ))}
+      {/* LOGS */}
+      <div className="admin-section">
+        <h2>Activity Audit Log</h2>
+        <div className="logs-container">
+          {logs.length === 0 ? (
+            <p className="no-logs">No activity recorded yet.</p>
+          ) : (
+            logs.map((log) => (
+              <div key={log.id} className="log-entry">
+                <span className="log-timestamp">[{log.time}]</span>
+                <span className="log-user">{log.username}</span>
+                <span className={`log-role ${log.role}`}>{log.role}</span>
+                <span className={`log-msg ${log.action.includes("ERROR") ? "log-error" : ""} ${log.action.includes("SECURITY") ? "log-security" : ""}`}>
+                  {log.action}
+                </span>
+              </div>
+            ))
+          )}
         </div>
       </div>
 
-      {/* ISOLATED VIEW CHANNELS FOR ADMIN PRIVILEGES ONLY */}
+      {/* ADMIN ONLY */}
       {!isManager && (
         <>
-          <div className="admin-section" style={{marginBottom: "25px"}}>
-            <h2>Register New Staff Member</h2>
-            <form className="staff-form" onSubmit={addStaff}>
-              <div style={{display: "flex", gap:"10px"}}>
-                <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
-                <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                <select value={role} onChange={(e) => setRole(e.target.value)}>
-                  <option value="employee">Employee</option>
-                  <option value="manager">Manager</option>
-                  <option value="admin">Admin</option>
-                </select>
-              </div>
-              <button type="submit" className="primary-btn" style={{marginTop:'10px'}}>Generate System Profile</button>
-            </form>
+          {/* ADD/EDIT FORM */}
+          <div className="admin-section">
+            <h2>{editingUser ? `Edit: ${editingUser.username}` : "Register New Staff"}</h2>
+
+            {editingUser ? (
+              <form className="staff-form" onSubmit={saveEditUser}>
+                <div className="form-row">
+                  <input type="text" placeholder="Username" value={editUsername} onChange={(e) => setEditUsername(e.target.value)} />
+                  <input type="text" placeholder="Password" value={editPassword} onChange={(e) => setEditPassword(e.target.value)} />
+                  <select value={editRole} onChange={(e) => setEditRole(e.target.value)}>
+                    <option value="employee">Employee</option>
+                    <option value="manager">Manager</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </div>
+                <div className="form-actions">
+                  <button type="submit" className="primary-btn">Update Staff</button>
+                  <button type="button" className="secondary-btn" onClick={cancelEdit}>Cancel</button>
+                </div>
+              </form>
+            ) : (
+              <form className="staff-form" onSubmit={addStaff}>
+                <div className="form-row">
+                  <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
+                  <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                  <select value={role} onChange={(e) => setRole(e.target.value)}>
+                    <option value="employee">Employee</option>
+                    <option value="manager">Manager</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </div>
+                <button type="submit" className="primary-btn">Generate System Profile</button>
+              </form>
+            )}
           </div>
 
+          {/* USERS TABLE */}
           <div className="admin-section">
-            <h2>Active Verified System Security Logins</h2>
-            <table className="inventory-table">
-              <thead>
-                <tr>
-                  <th>Username</th>
-                  <th>Masked Pass Key String</th>
-                  <th>Clearance Profile Role</th>
-                  <th>Access Control Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((u) => (
-                  <tr key={u.id}>
-                    <td><strong>{u.username}</strong></td>
-                    <td><code>{u.password}</code></td>
-                    <td><span className={`role-tag ${u.role}`} style={{padding:'10px', borderRadius:'4px', fontSize:'12px', background:'#e2e6eb' , font:'small' }}>{u.role}</span></td>
-                    <td>
-                      <button className="delete-btn" disabled={u.username === user.username} onClick={() => deleteUser(u.id, u.username)}>
-                        {u.username === user.username ? "Active Current Self" : "Revoke Access Token"}
-                      </button>
-                    </td>
+            <h2>System Users</h2>
+            <div className="table-wrapper">
+              <table className="users-table">
+                <thead>
+                  <tr>
+                    <th>Username</th>
+                    <th>Password</th>
+                    <th>Role</th>
+                    <th>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {users.map((u) => (
+                    <tr key={u.id}>
+                      <td className="user-name">{u.username}</td>
+                      <td><code>{u.password}</code></td>
+                      <td><span className={`role-tag ${u.role}`}>{u.role}</span></td>
+                      <td>
+                        <div className="action-buttons">
+                          <button className="edit-btn" disabled={u.username === user.username} onClick={() => startEditUser(u)}>
+                            {u.username === user.username ? "Active" : "Edit"}
+                          </button>
+                          <button className="delete-btn" disabled={u.username === user.username} onClick={() => deleteUser(u.id, u.username)}>
+                            {u.username === user.username ? "Active" : "Revoke"}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </>
       )}

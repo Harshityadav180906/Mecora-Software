@@ -274,3 +274,28 @@ table {
   }
 
 }
+/* =========================
+   PRINT - HIDE ALL UI
+========================= */
+
+@media print {
+  /* Hide navbar and all screen-only elements */
+  .navbar,
+  .screen-only-view,
+  .mobile-menu,
+  .mobile-backdrop,
+  .hamburger,
+  .tabs-header-row,
+  nav,
+  .nav-links,
+  .desktop-links {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Ensure print layout is visible */
+  .print-only-layout-engine {
+    display: block !important;
+    visibility: visible !important;
+  }
+}

@@ -1,88 +1,149 @@
 import { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { Navigate } from "react-router-dom";
-import "./Dashboard.css"; // Ensure this matches your CSS filename
+import { supabase } from "../lib/supabaseClient";
+import "./Dashboard.css";
 
 function Dashboard() {
   const { user } = useContext(AuthContext);
 
   const [orders, setOrders] = useState([]);
   const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // AUTH GUARD: If user session isn't active, redirect immediately to login page
+  // AUTH GUARD
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
-  // FETCH ORDERS FROM API
+  // FETCH ORDERS FROM SUPABASE
   async function fetchOrders() {
     try {
-      const response = await fetch("http://localhost:3000/orders");
-      if (!response.ok) throw new Error("Network response was not ok");
-      const data = await response.json();
+      const { data, error } = await supabase
+        .from("orders")
+        .select(
+          "id, cash_memo_no, patient_name, products, total_amount, order_date, payment_method, created_at"
+        )
+        .order("order_date", { ascending: false });
+
+      if (error) throw error;
       setOrders(data || []);
     } catch (error) {
-      console.error("Error fetching orders:", error);
+      console.error("Error fetching orders:", error.message);
     }
   }
 
-  // FETCH ITEMS/PRODUCTS FROM API
+  // FETCH ITEMS FROM SUPABASE
   async function fetchItems() {
     try {
-      const response = await fetch("http://localhost:3000/items");
-      if (!response.ok) throw new Error("Network response was not ok");
-      const data = await response.json();
+      const { data, error } = await supabase
+        .from("items")
+        .select("id, name, barcode, pack, batch, price, stock_quantity, quantity, gst");
+
+      if (error) throw error;
       setItems(data || []);
     } catch (error) {
-      console.error("Error fetching items:", error);
+      console.error("Error fetching items:", error.message);
     }
   }
 
   useEffect(() => {
-    fetchOrders();
-    fetchItems();
+    (async () => {
+      setLoading(true);
+      await Promise.all([fetchOrders(), fetchItems()]);
+      setLoading(false);
+    })();
   }, []);
 
-  // FINANCIAL & ANALYTICAL CALCULATIONS
-  
-  // Safe decimal aggregation for Total Revenue
+  // ---------- ANALYTICS ----------
+
+  // Total Revenue (sum of all order.total_amount)
   const totalRevenue = orders.reduce(
-    (sum, order) => sum + parseFloat(order.totalAmount || 0),
+    (sum, order) => sum + parseFloat(order.total_amount || 0),
     0
   );
 
-  // If your backend doesn't split monthly yet, fallback cleanly to total revenue metric
-  const monthlyRevenue = totalRevenue; 
+  // Monthly Revenue — current month based on order_date
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+
+  const monthlyRevenue = orders.reduce((sum, order) => {
+    const dateStr = order.order_date || order.created_at;
+    if (!dateStr) return sum;
+    const d = new Date(dateStr);
+    if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
+      return sum + parseFloat(order.total_amount || 0);
+    }
+    return sum;
+  }, 0);
 
   const totalOrdersCount = orders.length;
   const totalProductsCount = items.length;
 
-  // Calculate Products Sold by counting product items inside orders array safely
+  // Products Sold — sum quantities from jsonb `products` array on each order
   const productsSoldCount = orders.reduce((sum, order) => {
-    if (order.products && Array.isArray(order.products)) {
-      return sum + order.products.length;
+    if (Array.isArray(order.products)) {
+      // Try to sum quantity field; fallback to length of array
+      const qtySum = order.products.reduce(
+        (s, p) => s + parseInt(p?.quantity || p?.qty || 1, 10),
+        0
+      );
+      return sum + qtySum;
     }
-    return sum + 1; // Fallback to 1 product per order if nested array doesn't exist
+    return sum + 1;
   }, 0);
 
-  // Filter Thresholds matching your system
-  const lowStockCount = items.filter((item) => item.stock_quantity > 0 && item.stock_quantity <= 5).length;
-  const outOfStockCount = items.filter((item) => item.stock_quantity <= 0).length;
+  const lowStockCount = items.filter(
+    (item) => item.stock_quantity > 0 && item.stock_quantity <= 5
+  ).length;
+  const outOfStockCount = items.filter(
+    (item) => item.stock_quantity <= 0
+  ).length;
 
-  // CURRENCY FORMATTING UTILITY: Stops trailing decimals and adds localized formatting commas
-  const formatCurrency = (val) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 2
+  // ---------- DAILY SALES (last 7 days) ----------
+  const dailySales = (() => {
+    const buckets = {};
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const key = d.toISOString().slice(0, 10); // YYYY-MM-DD
+      buckets[key] = 0;
+    }
+    orders.forEach((o) => {
+      const dateStr = o.order_date || o.created_at;
+      if (!dateStr) return;
+      const key = new Date(dateStr).toISOString().slice(0, 10);
+      if (key in buckets) {
+        buckets[key] += parseFloat(o.total_amount || 0);
+      }
+    });
+    return Object.entries(buckets).map(([date, amount]) => ({ date, amount }));
+  })();
+
+  const maxDaily = Math.max(...dailySales.map((d) => d.amount), 1);
+
+  // ---------- UTILS ----------
+  const formatCurrency = (val) =>
+    new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      maximumFractionDigits: 2,
     }).format(val);
-  };
+
+  if (loading) {
+    return (
+      <div className="page-container">
+        <h1 className="admin-title">Mecora Dashboard</h1>
+        <p>Loading dashboard...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="page-container">
       <h1 className="admin-title">Mecora Dashboard</h1>
 
-      {/* DASHBOARD CARDS GRID */}
       <div className="dashboard-cards">
         <div className="card">
           <h2>Total Orders</h2>
@@ -120,13 +181,66 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* ANALYTICS SECTION */}
       <div className="admin-section analytics-section">
-        <h2>Daily Sales Analytics</h2>
-        <div className="chart-container" style={{ minHeight: "250px", marginTop: "20px" }}>
+        <h2>Daily Sales Analytics (Last 7 Days)</h2>
+        <div
+          className="chart-container"
+          style={{ minHeight: "250px", marginTop: "20px" }}
+        >
           <p style={{ color: "#aaa", fontSize: "14px" }}>Daily Sales Revenue</p>
-          {/* Include your specific Chart.js, Recharts, or CSS bar implementation here */}
-          <div className="bar-chart-placeholder" style={{ background: "#1e293b", height: "200px", borderRadius: "8px", marginTop: "10px" }}></div>
+
+          <div
+            style={{
+              background: "#1e293b",
+              height: "220px",
+              borderRadius: "8px",
+              marginTop: "10px",
+              padding: "16px",
+              display: "flex",
+              alignItems: "flex-end",
+              justifyContent: "space-between",
+              gap: "8px",
+            }}
+          >
+            {dailySales.map(({ date, amount }) => {
+              const heightPct = (amount / maxDaily) * 100;
+              return (
+                <div
+                  key={date}
+                  style={{
+                    flex: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    height: "100%",
+                    justifyContent: "flex-end",
+                  }}
+                  title={`${date}: ${formatCurrency(amount)}`}
+                >
+                  <div
+                    style={{
+                      width: "100%",
+                      height: `${heightPct}%`,
+                      background:
+                        "linear-gradient(180deg, #38bdf8 0%, #0ea5e9 100%)",
+                      borderRadius: "4px 4px 0 0",
+                      minHeight: amount > 0 ? "4px" : "0",
+                      transition: "height 0.4s ease",
+                    }}
+                  />
+                  <span
+                    style={{
+                      color: "#94a3b8",
+                      fontSize: "11px",
+                      marginTop: "6px",
+                    }}
+                  >
+                    {date.slice(5)}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>

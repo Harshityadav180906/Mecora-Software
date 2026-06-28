@@ -1,45 +1,46 @@
 import { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { supabase } from "../lib/supabaseClient";
 import "./Inventory.css";
 
 function Inventory() {
-  // Leverage context variables directly to secure real-time syncing
   const { items, setItems, fetchItems } = useContext(AuthContext);
-  
+
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [sortBy, setSortBy] = useState("");
 
   useEffect(() => {
-    // Fetches any remote data additions when this component mounts
     fetchItems();
   }, []);
 
+  // DELETE PRODUCT FROM SUPABASE
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm("Delete this product?");
     if (!confirmDelete) return;
 
     try {
-      await fetch(`http://localhost:3000/items/${id}`, {
-        method: "DELETE",
-      });
-      // Synchronize changes back up across global hooks context variables
+      const { error } = await supabase.from("items").delete().eq("id", id);
+      if (error) throw error;
+
       setItems((prev) => prev.filter((item) => item.id !== id));
       alert("Product deleted successfully");
     } catch (error) {
-      console.log(error);
+      console.error("Delete failed:", error.message);
+      alert(`Delete failed: ${error.message}`);
     }
   };
 
   const exportCSV = () => {
-    const headers = ["Barcode", "Name", "Category", "Price", "Stock", "Supplier", "Expiry"];
+    const headers = ["Barcode", "Name", "Pack", "Batch", "Price", "Stock", "GST", "Expiry"];
     const rows = items.map((item) => [
       item.barcode,
       item.name,
-      item.category,
+      item.pack || "",
+      item.batch || "",
       item.price,
       item.stock_quantity,
-      item.supplier,
+      item.gst || "",
       item.expiry_date,
     ]);
 
@@ -51,7 +52,8 @@ function Inventory() {
     link.click();
   };
 
-  const categories = ["All", ...new Set(items.map((item) => item.category))];
+  // NOTE: `category` doesn't exist in DB — falls back to "Uncategorized"
+  const categories = ["All", ...new Set(items.map((item) => item.category || "Uncategorized"))];
 
   const filteredItems = items
     .filter((item) => {
@@ -59,7 +61,10 @@ function Inventory() {
         item.name?.toLowerCase().includes(search.toLowerCase()) ||
         item.barcode?.toLowerCase().includes(search.toLowerCase());
 
-      const matchesCategory = categoryFilter === "All" ? true : item.category === categoryFilter;
+      const matchesCategory =
+        categoryFilter === "All"
+          ? true
+          : (item.category || "Uncategorized") === categoryFilter;
       return matchesSearch && matchesCategory;
     })
     .sort((a, b) => {
@@ -75,11 +80,20 @@ function Inventory() {
       }
     });
 
-  // KPI calculations map directly to the context data framework array models
+  // KPI calculations
   const totalProducts = items.length;
-  const totalStock = items.reduce((sum, item) => sum + Number(item.stock_quantity || 0), 0);
-  const inventoryValue = items.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.stock_quantity || 0), 0);
-  const lowStockCount = items.filter((item) => Number(item.stock_quantity) <= Number(item.reorder_level || 10)).length;
+  const totalStock = items.reduce(
+    (sum, item) => sum + Number(item.stock_quantity || 0),
+    0
+  );
+  const inventoryValue = items.reduce(
+    (sum, item) =>
+      sum + Number(item.price || 0) * Number(item.stock_quantity || 0),
+    0
+  );
+  const lowStockCount = items.filter(
+    (item) => Number(item.stock_quantity) <= Number(item.reorder_level || 10)
+  ).length;
 
   const expiringSoonCount = items.filter((item) => {
     if (!item.expiry_date) return false;
@@ -93,16 +107,29 @@ function Inventory() {
     <div className="inventory-container">
       <h1 className="inventory-title">Inventory Management</h1>
 
-      {/* KPI STATS DASHBOARD PANEL */}
       <div className="inventory-stats">
-        <div className="stat-card products-card"><h3>Total Products</h3><p>{totalProducts}</p></div>
-        <div className="stat-card stock-card"><h3>Total Stock</h3><p>{totalStock}</p></div>
-        <div className="stat-card low-stock-card"><h3>Low Stock</h3><p>{lowStockCount}</p></div>
-        <div className="stat-card value-card"><h3>Inventory Value</h3><p>₹{inventoryValue.toLocaleString()}</p></div>
-        <div className="stat-card expiry-card"><h3>Expiring Soon</h3><p>{expiringSoonCount}</p></div>
+        <div className="stat-card products-card">
+          <h3>Total Products</h3>
+          <p>{totalProducts}</p>
+        </div>
+        <div className="stat-card stock-card">
+          <h3>Total Stock</h3>
+          <p>{totalStock}</p>
+        </div>
+        <div className="stat-card low-stock-card">
+          <h3>Low Stock</h3>
+          <p>{lowStockCount}</p>
+        </div>
+        <div className="stat-card value-card">
+          <h3>Inventory Value</h3>
+          <p>₹{inventoryValue.toLocaleString()}</p>
+        </div>
+        <div className="stat-card expiry-card">
+          <h3>Expiring Soon</h3>
+          <p>{expiringSoonCount}</p>
+        </div>
       </div>
 
-      {/* SEARCH AND FILTERS CONTROLS */}
       <div className="inventory-controls">
         <input
           type="text"
@@ -112,13 +139,21 @@ function Inventory() {
           onChange={(e) => setSearch(e.target.value)}
         />
 
-        <select className="filter-select" value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
+        <select
+          className="filter-select"
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+        >
           {categories.map((cat) => (
             <option key={cat} value={cat}>{cat}</option>
           ))}
         </select>
 
-        <select className="filter-select" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+        <select
+          className="filter-select"
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+        >
           <option value="">Sort By</option>
           <option value="price">Price</option>
           <option value="stock">Stock</option>
@@ -129,17 +164,16 @@ function Inventory() {
         <button className="export-btn" onClick={exportCSV}>Export CSV</button>
       </div>
 
-      {/* MAIN DATA GRID TABLE */}
       <div className="table-wrapper">
         <table className="inventory-table">
           <thead>
             <tr>
               <th>Barcode</th>
               <th>Name</th>
-              <th>Category</th>
+              <th>Pack</th>
               <th>Price</th>
               <th>Stock</th>
-              <th>Supplier</th>
+              <th>Batch</th>
               <th>Expiry</th>
               <th>Status</th>
               <th>Alerts</th>
@@ -158,7 +192,9 @@ function Inventory() {
 
                 let expiringSoon = false;
                 if (item.expiry_date) {
-                  const diffDays = (new Date(item.expiry_date) - new Date()) / (1000 * 60 * 60 * 24);
+                  const diffDays =
+                    (new Date(item.expiry_date) - new Date()) /
+                    (1000 * 60 * 60 * 24);
                   expiringSoon = diffDays <= 90 && diffDays > 0;
                 }
 
@@ -166,10 +202,12 @@ function Inventory() {
                   <tr key={item.id}>
                     <td>{item.barcode}</td>
                     <td>{item.name}</td>
-                    <td>{item.category}</td>
+                    <td>{item.pack || "N/A"}</td>
                     <td>₹{Number(item.price || 0).toFixed(2)}</td>
-                    <td style={{ color: isLowStock ? "#ff6b6b" : "#4ade80", fontWeight: 700 }}>{stock}</td>
-                    <td>{item.supplier || "N/A"}</td>
+                    <td className={isLowStock ? "text-low-stock" : "text-in-stock"}>
+                      {stock}
+                    </td>
+                    <td>{item.batch || "N/A"}</td>
                     <td>{item.expiry_date || "N/A"}</td>
                     <td>
                       <span className={isAvailable ? "available" : "not-available"}>
@@ -181,7 +219,9 @@ function Inventory() {
                       {expiringSoon && <div className="expiring">Expiring Soon</div>}
                     </td>
                     <td>
-                      <button className="delete-btn" onClick={() => handleDelete(item.id)}>Delete</button>
+                      <button className="delete-btn" onClick={() => handleDelete(item.id)}>
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 );
