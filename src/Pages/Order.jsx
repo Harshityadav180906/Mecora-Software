@@ -1,17 +1,17 @@
 import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { supabase } from "../lib/supabaseClient"; // ✅ Matches your src/lib/ path
+import { supabase } from "../lib/supabaseClient";
 import "./Order.css";
 
 function Order() {
   const { user } = useContext(AuthContext);
 
   const shopDetails = {
-    name: "RAKESH MEDICOS",
+    name: "XYZ MEDICOS",
     address: "RZD, 258A, RAJ NAGAR PART 2, PALAM COLONY, NEW DELHI 110077, NEAR NEW GURUDWARA",
-    phone: "8010211317; 9810848820",
-    gstin: "07AABPY1653L1ZC",
-    dlNo: "PLM-119119-20, 119120-21",
+    phone: "8010219784; 9810848820",
+    gstin: "XXXXXXXXX53L1ZC",
+    dlNo: "PXXXXXXXX, 119120-21",
   };
 
   const [inventoryItems, setInventoryItems] = useState([]);
@@ -27,8 +27,6 @@ function Order() {
   });
 
   // ── FETCH INVENTORY FROM SUPABASE ──────────────────────────────────────────
-  // Matches your items table columns:
-  // id, name, barcode, pack, batch, expiry_date, price, stock_quantity, quantity, gst, created_at
   useEffect(() => {
     const fetchInventory = async () => {
       const { data, error } = await supabase
@@ -61,14 +59,13 @@ function Order() {
     const match = inventoryItems.find(
       (item) =>
         item.barcode === barcodeInput.trim() ||
-        item.name.toLowerCase().includes(barcodeInput.toLowerCase()),
+        item.name.toLowerCase().includes(barcodeInput.toLowerCase())
     );
 
     if (match) {
       const existingItemIndex = currentTab.items.findIndex((item) => item.id === match.id);
       let updatedItems = [...currentTab.items];
 
-      // stock_quantity is your primary stock field based on the items table
       const currentAvailableStock = Number(match.stock_quantity ?? match.quantity ?? 0);
       const currentlyInCart = existingItemIndex > -1 ? updatedItems[existingItemIndex].qty : 0;
 
@@ -87,10 +84,10 @@ function Order() {
           barcode: match.barcode || "N/A",
           pack: match.pack || "10TAB",
           batch: match.batch || "B" + Math.floor(100000 + Math.random() * 900000),
-          exp: match.expiry_date || "01/28",        // expiry_date → exp for display
-          rate: Number(match.price || 0),           // price → rate for billing
+          exp: match.expiry_date || "01/28",
+          rate: Number(match.price || 0),
           qty: 1,
-          gst: Number(match.gst || 0),              // gst column from items table
+          gst: Number(match.gst || 0),
           currentInventoryStock: currentAvailableStock,
         });
       }
@@ -157,12 +154,9 @@ function Order() {
   };
 
   // ── FINALIZE ORDER: SAVE TO SUPABASE + UPDATE STOCK ───────────────────────
-  // Matches your orders table columns (all snake_case):
-  // cash_memo_no, patient_name, patient_phone, patient_address, doctor_name,
-  // products (jsonb), total_amount, order_date, payment_method, created_by,
-  // cash_received, change_returned
   const processFinalizeOrderAndBill = async (shouldPrintReceipt) => {
     setShowPrintModal(false);
+
     const orderToSave = printSnapshot || {
       ...currentTab,
       subtotal,
@@ -171,7 +165,6 @@ function Order() {
       changeReturnAmt,
     };
 
-    // Build the products array stored as JSONB in Supabase
     const transformedProducts = orderToSave.items.map((item) => ({
       name: item.name,
       quantity: Number(item.qty || 1),
@@ -182,24 +175,23 @@ function Order() {
       rate: Number(item.rate || 0),
     }));
 
-    // ✅ Keys match your orders table column names exactly (snake_case)
     const packedOrderPayload = {
-      cash_memo_no:     orderToSave.cashMemoNo,
-      patient_name:     orderToSave.patientName,
-      patient_phone:    orderToSave.patientPhone,
-      patient_address:  orderToSave.patientAddress,
-      doctor_name:      orderToSave.docName || "N/A",
-      products:         transformedProducts,                    // JSONB column
-      total_amount:     orderToSave.grandTotalRounded,
-      order_date:       new Date().toISOString(),
-      payment_method:   orderToSave.paymentMethod,
-      created_by:       user?.username || "HARSHIT",
-      cash_received:    Number(orderToSave.displayCashReceived),
-      change_returned:  orderToSave.changeReturnAmt,
+      cash_memo_no: orderToSave.cashMemoNo,
+      patient_name: orderToSave.patientName,
+      patient_phone: orderToSave.patientPhone,
+      patient_address: orderToSave.patientAddress,
+      doctor_name: orderToSave.docName || "N/A",
+      products: transformedProducts,
+      total_amount: orderToSave.grandTotalRounded,
+      order_date: new Date().toISOString(),
+      payment_method: orderToSave.paymentMethod,
+      created_by: user?.username || "HARSHIT",
+      cash_received: Number(orderToSave.displayCashReceived),
+      change_returned: orderToSave.changeReturnAmt,
     };
 
     try {
-      // 1️⃣ Insert order into Supabase orders table
+      // 1. Insert order into Supabase
       const { error: orderError } = await supabase
         .from("orders")
         .insert([packedOrderPayload]);
@@ -208,9 +200,7 @@ function Order() {
         throw new Error("Failed to save order: " + orderError.message);
       }
 
-      // 2️⃣ Update stock_quantity for each purchased item
-      // Your items table has both stock_quantity (int4) and quantity (int4)
-      // We update both to keep them in sync
+      // 2. Update inventory in Supabase
       const stockUpdatePromises = orderToSave.items.map((cartItem) => {
         const newStock = Math.max(0, cartItem.currentInventoryStock - cartItem.qty);
 
@@ -218,7 +208,7 @@ function Order() {
           .from("items")
           .update({
             stock_quantity: newStock,
-            quantity: newStock,       // also update quantity column to stay in sync
+            quantity: newStock,
           })
           .eq("id", cartItem.id)
           .then(({ error }) => {
@@ -230,7 +220,7 @@ function Order() {
 
       await Promise.all(stockUpdatePromises);
 
-      // 3️⃣ Update local inventory state (optimistic UI update)
+      // 3. Update local state
       setInventoryItems((prevInventory) =>
         prevInventory.map((invItem) => {
           const cartItem = orderToSave.items.find((c) => c.id === invItem.id);
@@ -242,33 +232,36 @@ function Order() {
         })
       );
 
-      // 4️⃣ Print if requested
+      // Helper to reset the tab state after printing completes
+      const resetCurrentTab = () => {
+        setTabsData((prevTabs) => ({
+          ...prevTabs,
+          [activeTab]: {
+            patientName: "",
+            patientPhone: "",
+            patientAddress: "",
+            docName: "",
+            discountPercent: 0,
+            cashReceived: "",
+            paymentMethod: "Cash",
+            items: [],
+            cashMemoNo: Math.floor(1000 + Math.random() * 9000),
+          },
+        }));
+        setPrintSnapshot(null);
+      };
+
+      // 4. Print and Clean Up
       if (shouldPrintReceipt) {
         setTimeout(() => {
           window.print();
-          setPrintSnapshot(null);
-        }, 350);
+          resetCurrentTab();
+          alert(`Order saved! Memo No: ${orderToSave.cashMemoNo}`);
+        }, 300);
       } else {
-        setPrintSnapshot(null);
+        resetCurrentTab();
+        alert(`Order saved! Memo No: ${orderToSave.cashMemoNo}`);
       }
-
-      alert(`Order saved! Memo No: ${orderToSave.cashMemoNo}`);
-
-      // 5️⃣ Reset the current tab
-      setTabsData((prevTabs) => ({
-        ...prevTabs,
-        [activeTab]: {
-          patientName: "",
-          patientPhone: "",
-          patientAddress: "",
-          docName: "",
-          discountPercent: 0,
-          cashReceived: "",
-          paymentMethod: "Cash",
-          items: [],
-          cashMemoNo: Math.floor(1000 + Math.random() * 9000),
-        },
-      }));
     } catch (err) {
       console.error(err);
       alert("Error completing order: " + err.message);
@@ -584,7 +577,7 @@ function Order() {
                 </div>
               )}
               <div className="authorized-sign-box">
-                <p>For RAKESH MEDICOS</p>
+                <p>For XYZ MEDICOS</p>
                 <div style={{ height: "25px" }}></div>
                 <p className="sign-user-tag">({user?.username || "HARSHIT"})</p>
               </div>

@@ -75,7 +75,7 @@ function App() {
 
         <Route
           path="/add-product"
-          element={
+          element={ 
             <StaffProtectedRoute>
               <AddProduct />
             </StaffProtectedRoute>

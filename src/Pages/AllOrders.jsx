@@ -46,12 +46,11 @@ const AllOrders = () => {
   const [activePrintTarget, setActivePrintTarget] = useState(null);
 
   const shopDetails = {
-    name: "RAKESH MEDICOS",
-    address:
-      "RZD, 258A, RAJ NAGAR PART 2, PALAM COLONY, NEW DELHI 110077, NEAR NEW GURUDWARA",
-    phone: "8010211317; 9810848820",
-    gstin: "07AABPY1653L1ZC",
-    dlNo: "PLM-119119-20, 119120-21",
+    name: "XYZ MEDICOS",
+    address: "RZD, 258A, RAJ NAGAR PART 2, PALAM COLONY, NEW DELHI 110077, NEAR NEW GURUDWARA",
+    phone: "8010219784; 9810848820",
+    gstin: "XXXXXXXXX53L1ZC",
+    dlNo: "PXXXXXXXX, 119120-21",
   };
 
   // FETCH ORDERS FROM SUPABASE
@@ -738,7 +737,7 @@ PROCESSED BY   : ${order.createdBy || "System Machine"}
                   </div>
                 )}
                 <div className="authorized-sign-box">
-                  <p>For RAKESH MEDICOS</p>
+                  <p>For XYZ MEDICOS</p>
                   <div style={{ height: "20px" }}></div>
                   <p className="sign-user-tag">
                     ({activePrintTarget.createdBy || "HARSHIT"})
